@@ -1,0 +1,12 @@
+Father;180;Father's father;Father's mother
+Mother;175;Mother's father;Mother's mother
+Son;176;Father;Mother
+Daughter;174;Father;Mother
+Father's father;180;-;-
+Father's mother;173;-;-
+Father's sister;177;Father's father;Father's mother
+Mother's father;179;-;-
+Mother's mother;172;-;-
+Mother's sister;177;Mother's father;Mother's mother
+Mother's brother;180;Mother's father;Mother's mother
+Cousin Lisa;176;Mother's brother;-

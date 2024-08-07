@@ -1,0 +1,12 @@
+isa;180;isanisa;isanaiti
+aiti;175;aidinisa;aidinaiti
+poika;176;isa;aiti
+tytar;174;isa;aiti
+aidinisa;179;-;-
+aidinaiti;176;-;-
+isanisa;180;-;-
+isanaiti;173;-;-
+aidinsisko;177;aidinisa;aidinaiti
+aidinveli;180;aidinisa;aidinaiti
+isansisko;177;isanisa;isanaiti
+Liisa;176;aidinveli;-
