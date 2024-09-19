@@ -75,7 +75,7 @@ int main(void){
         else if (command == "cheapest"){
             if(amountOfVar != 1){cout << "Error: error in command " << command << endl;}
             else if(allProducts.find(cmd_1) == allProducts.end()){
-                cout << "Error: The product is not part of product selection" << endl;
+                cout << "The product is not part of product selection" << endl;
             }
             else{
                 vector<pair<string, string>> cheapestList;
