@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <algorithm>
 
 #define NONE_STOCK_SIGN "out-of-stock"
 
@@ -23,7 +24,6 @@ bool read_success(MarketData* allData, set<string>* productList);
 int read_cmd_and_varNum(string* cmd_0, string* cmd_1, string* cmd_2, string* cmd_border);
 double find_cheapest_price(MarketData* allData, vector<pair<string, string>>* cheapestList, string productName);
 
-
 void print_all(MarketData* allData);
 
 
@@ -34,15 +34,11 @@ int main(void){
     set<string> allProducts;
     bool readStatusSuccess = read_success(&allDataStored, &allProducts);
 
-    if(readStatusSuccess){
-        cout << "FILE READING SUCCESS!" << endl
-             << "Welcome to the market system!" << endl;
-    }
+    if(!readStatusSuccess){return EXIT_FAILURE;}
 
     while (readStatusSuccess) {
         cout << "> ";
         string command, cmd_1, cmd_2, cmd_border;
-
         int amountOfVar = read_cmd_and_varNum(&command, &cmd_1, &cmd_2, &cmd_border);
 
         if(command == "quit"){
@@ -111,16 +107,15 @@ int main(void){
                 }
             }
         }
-        else if (command == "printall"){
-            print_all(&allDataStored);
-        }
+        //this cmd is only for test
+        //else if (command == "printall"){print_all(&allDataStored);}
         else{cout << "Error: unknown command: " << command << endl;}
     }
     return 0;
 }
 
-//process the input csv data; error, cout error message and assign the value
-//to the dataset
+//process the input csv data; error, cout error message
+//and assign the value to the dataset
 bool read_success(MarketData* allData, set<string>* productList){
     string inputFName;
     cout << "Input file: ";
@@ -142,41 +137,58 @@ bool read_success(MarketData* allData, set<string>* productList){
 
         if(chainName.empty() || storeName.empty() || pName.empty() || pPriceStr.empty()) {
             cout << "Error: the input file has an erroneous line" << endl;
-            return false;
-        }
+            return false;}
         if(chainName.find(' ') != string::npos || storeName.find(' ') != string::npos
                 || pName.find(' ') != string::npos || pPriceStr.find(' ') != string::npos) {
             cout << "Error: the input file has an erroneous line" << endl;
-            return false;
-        }
+            return false;}
 
         //make the product list
         productList->insert(pName);
 
         double pPriceDouble;
-        if(pPriceStr == "out-of-stock"){
-            pPriceDouble = -1.0;
-        }
-        else{
-            pPriceDouble = stod(pPriceStr);
-        }
+        if(pPriceStr == "out-of-stock"){pPriceDouble = -1.0;}
+        else{pPriceDouble = stod(pPriceStr);}
 
         Product eachProduct = {pName, pPriceDouble};
+        //chainName hasn't been stored
         if(allData->find(chainName) == allData->end()){
             allData->insert({chainName, {{storeName, {eachProduct}}}});
         }
+        //chainName has been stored
         else{
+            //...but storeName hasn't been stored
             if(allData->at(chainName).find(storeName) == allData->at(chainName).end()){
                 allData->at(chainName).insert({storeName, {eachProduct}});
             }
+            //storeName has been stored
             else{
-                allData->at(chainName).at(storeName).push_back(eachProduct);
+                //...but we don't know if this product has price history
+                // Check if the product already exists
+                bool productFound = false;
+                for (auto& product : allData->at(chainName).at(storeName)) {
+                    if (eachProduct.product_name == product.product_name) {
+                        product.price = eachProduct.price;  // Update the price
+                        productFound = true;
+                        break;
+                    }
+                }
+                // If the product was not found, add it
+                if (!productFound) {
+                    allData->at(chainName).at(storeName).push_back(eachProduct);
+                }
             }
-
         }
-
     }
     listFileOB.close();
+    //finally, sort the vector by productName
+    for(auto& chainName:*allData){
+        for(auto& storeName:chainName.second){
+            std::sort(storeName.second.begin(), storeName.second.end(), [](const Product& a, const Product& b){
+                return a.product_name < b.product_name;
+            });
+        }
+    }
     return true;
 }
 
