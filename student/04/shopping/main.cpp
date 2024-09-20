@@ -41,8 +41,6 @@ using namespace std;
 struct Product {
     string product_name;
     double price;
-
-    //operator==(par) par.productname == productname
 };
 /* The data structure here is used to steore all the data from the csv file.
  * It can be interpreted in this way:
@@ -117,6 +115,7 @@ int main(void){
     //read the file and receive the file-reading status
     bool readStatusSuccess = read_success(allDataStored, allProducts);
     if(!readStatusSuccess){return EXIT_FAILURE;}
+    //keep reading until cmd is "quit"
     while (readStatusSuccess) {
         cout << "> ";
         string command, cmd_1, cmd_2, cmd_border;
@@ -156,10 +155,13 @@ int main(void){
     return 0;
 }
 
-/* process the input csv data; when error, cout error message
- * at the sametime, assign the value to the dataset
- * finally, return boolean value to tell the status of data-reading */
+//============== bodies of functions ====================
+
+//- - - - - - functions contribute most - - - - - -
 bool read_success(MarketData& allData, set<string>& productList){
+    /* process the input csv data; when error, cout error message
+     * at the sametime, assign the value to the dataset
+     * finally, return boolean value to tell the status of data-reading */
     string inputFName;
     cout << "Input file: ";
     getline(cin, inputFName);
@@ -169,6 +171,14 @@ bool read_success(MarketData& allData, set<string>& productList){
         cout << "Error: the input file cannot be opened" << endl;
         return false;
     }
+    /* Basic idea:
+     * Read content line by line (using while with getline
+     * to avoid any data missing bcs >> operator skip spaces.
+     * Then asign the content to 4 fields and check whether
+     * any of them is empty or containing spaces
+     * if empty or containing spaces, the file has an erroneous line;
+     * if not, store the data
+    */
     string eachLine;
     while(getline(listFileOB, eachLine)){
         stringstream lineStream(eachLine);
@@ -190,6 +200,7 @@ bool read_success(MarketData& allData, set<string>& productList){
         productList.insert(pName);
 
         double pPriceDouble;
+        //sign for identifing the out-of-stock status
         if(pPriceStr == "out-of-stock"){pPriceDouble = -1.0;}
         else{pPriceDouble = stod(pPriceStr);}
 
@@ -222,24 +233,33 @@ bool read_success(MarketData& allData, set<string>& productList){
         }
     }
     listFileOB.close();
+    //data successfully stored
     return true;
 }
 
 int read_cmd_and_varNum(string& cmd_0,
                         string& cmd_1, string& cmd_2, string& cmd_border){
+    //cmd in a line from cin
     string lineCMD;
     getline(cin, lineCMD);
     stringstream streamCMD(lineCMD);
-
+    //asign each part of cmd in a line, splitted by spaces
     streamCMD >> cmd_0;
     streamCMD >> cmd_1;
     streamCMD >> cmd_2;
     getline(streamCMD, cmd_border);
 
+    /* cmds look like this
+     * > selection Prisma Kaleva everything
+     *  | cmd_0   |cmd_1 |cmd_2 |cmd_border|
+     * obviously, when cmd_border isn't empty,
+     * cmd_1 is surely not empty.
+     * Thus we start from checking the empty status of cmd_border
+     **/
     if(!cmd_border.empty()){return 9;}
-        else if(!cmd_2.empty()){return 2;}
-        else if(!cmd_1.empty()){return 1;}
-        else{return 0;}
+    else if(!cmd_2.empty()){return 2;}
+    else if(!cmd_1.empty()){return 1;}
+    else{return 0;}
 }
 
 double find_cheapest_price(MarketData& allData,
@@ -253,6 +273,16 @@ double find_cheapest_price(MarketData& allData,
             for(auto& products:stores.second){
                 //if products.first(the name of product) has been recorded previously
                 if(products.first == productName){
+                    /* Value-assigning happens only when
+                     * 1) lowestPrice hasn't been asigned (thus it's -1.0)
+                     * NOTE even if the product.price is -1.0, it doesn't matter
+                     * bcs value = -1.0 is always unvalid.
+                     * Meanwhile, if lowest = -1.0 and the product.price = -1.0,
+                     * assigning doesn't change anything, and also
+                     * representing the out-of-stock status
+                     * 2) the product.price is lower now and the lowestPrice is not -1.0
+                     * bcs -1.0 would be lower than any other normal price
+                     **/
                     if((lowestPrice == -1.0)
                             || (lowestPrice > products.second.price && products.second.price != -1.0)){
                         lowestPrice = products.second.price;
@@ -274,7 +304,13 @@ double find_cheapest_price(MarketData& allData,
     return lowestPrice;
 }
 
+//- - - - - - functions for printing - - - - - - -
 //cmds using no variable
+/**
+ * @brief products_print - make the output printing when command is "products"
+ * @param allProducts    - where main data stored
+ * @param amountOfVar    - the amount of the variable to this command from user
+ */
 void products_print(set<string>& allProducts, int amountOfVar){
     /*cmd "products" directly print out all products
      *regardless of the chain or location
@@ -283,12 +319,16 @@ void products_print(set<string>& allProducts, int amountOfVar){
     if(amountOfVar != 0){cout << "Error: error in command " << "products" << endl;}
     else{
         //product names were directly stored in (set)allProducts
-        for(auto &product:allProducts){
+        for(auto& product:allProducts){
             cout << product << endl;
         }
     }
 }
-
+/**
+ * @brief chains_print   - make the output printing when command is "chains"
+ * @param allDataStored  - where main data stored
+ * @param amountOfVar    - the amount of the variable to this command from user
+ */
 void chains_print(MarketData& allDataStored, int amountOfVar){
     /*cmd "chains" directly print out all chainName
      *regardless of other factors
@@ -296,13 +336,19 @@ void chains_print(MarketData& allDataStored, int amountOfVar){
      *(cmd_1, cmd_2, and cmd_border should be empty) */
     if(amountOfVar != 0){cout << "Error: error in command " << "chains" << endl;}
     else{
-        //chain here is pair<chainName, map<store, vector<product> > >
-        for(auto &chain:allDataStored){
+        //chain here is pair<chainName, map<location, map<product.name, product> > >
+        for(auto& chain:allDataStored){
             cout << chain.first << endl;
         }
     }
 }
 //cmds using only 1 variable
+/**
+ * @brief stores_print  - make the output printing when command is "stores"
+ * @param allDataStored - where main data stored
+ * @param cmd_1         - the first valid variable to command "stores"
+ * @param amountOfVar   - the amount of the variable to this command from user
+ */
 void stores_print(MarketData& allDataStored, string cmd_1, int amountOfVar){
     /*cmd "stores" prints out all locations of a certain chainName
      *thus should have only 1 variable
@@ -315,12 +361,19 @@ void stores_print(MarketData& allDataStored, string cmd_1, int amountOfVar){
     }
     else{
         /*stores here is
-         *map<location, vector<product> > under the given chainName */
-        for(auto &stores:allDataStored.at(cmd_1)){
+         *map<location, map<product.name, product> > under the given chainName */
+        for(auto& stores:allDataStored.at(cmd_1)){
             cout << stores.first << endl;
         }
     }
 }
+/**
+ * @brief cheapest_print - make the output printing when command is "cheapest"
+ * @param allDataStored  - where main data stored
+ * @param allProducts    - where the data of product names (no repeated) stored
+ * @param cmd_1          - the first valid variable to command "stores"
+ * @param amountOfVar    - the amount of the variable to this command from user
+ */
 void cheapest_print(MarketData& allDataStored, set<string>& allProducts,
                     string cmd_1, int amountOfVar){
     /*cmd "cheapest" finds out the list of chain-location with given productName
@@ -344,13 +397,20 @@ void cheapest_print(MarketData& allDataStored, set<string>& allProducts,
         else{
             //set the format of output figure ( = %.2f)
             cout << fixed << setprecision(2) << price << " " << "euros" << endl;
-            for(auto &eachStore:cheapestList){
+            for(auto& eachStore:cheapestList){
                 cout << eachStore.first << " " << eachStore.second << endl;
             }
         }
     }
 }
 //cmd using 2 variables
+/**
+ * @brief selection_print - make the output printing when command is "cheapest"
+ * @param allDataStored   - where main data stored
+ * @param cmd_1           - the first valid variable to command "stores"
+ * @param cmd_2           - the second valid variable to command "stores"
+ * @param amountOfVar     - the amount of the variable to this command from user
+ */
 void selection_print(MarketData& allDataStored,
                      string cmd_1, string cmd_2, int amountOfVar){
     /*cmd "selection" finds out the all the products
@@ -367,7 +427,7 @@ void selection_print(MarketData& allDataStored,
         cout << "Error: unknown store" << endl;
     }
     else{
-        //products here is vector<Product>
+        //products here is map<product.name, product>
         for(auto& products:allDataStored.at(cmd_1).at(cmd_2)){
             cout << products.first << " ";
             if(products.second.price == -1.0){cout << "out of stock" << endl;}
@@ -376,9 +436,15 @@ void selection_print(MarketData& allDataStored,
         }
     }
 }
-//cmd only for test
+
+//- - - - - - functions not required - - - - - - -
+//cmd only for personal test
+/**
+ * @brief print_all - print out all content in a format same as the sample overview
+ * @param allData   - where main data stored
+ */
 void print_all(MarketData& allData){
-    cout << "Here are the list of all products in all supermarkets:" << endl << endl;
+    cout << "Here are the list of all products in all supermarkets:" << endl;
     for(auto& chain:allData){
         cout << chain.first << endl;
         for(auto& store:chain.second){
@@ -388,6 +454,7 @@ void print_all(MarketData& allData){
                     cout << "        " << products.second.product_name << "  \t" << "out-of-stock" << endl;
                 }
                 else{
+                    //set output as %.2f
                     cout << "        " << products.second.product_name << "  \t"
                             << fixed << setprecision(2) << products.second.price << endl;
                 }
