@@ -141,31 +141,11 @@ int main(void){
             cheapest_print(allDataStored, allProducts, cmd_1, amountOfVar);
         }
         else if (command == "selection"){
-            /*cmd "selection" finds out the all the products
-             *with given chainName(cmd_1) and location(cmd_2)
-             *thus should have only 2 variables
-             *(cmd_border should be empty) */
-            if(amountOfVar != 2){cout << "Error: error in command " << command << endl;}
-            //when chainName(cmd_1) can't be found
-            else if(allDataStored.find(cmd_1) == allDataStored.end()){
-                cout << "Error: unknown chain name" << endl;
-            }
-            //when location(cmd_2) can't be found
-            else if(allDataStored.at(cmd_1).find(cmd_2) == allDataStored.at(cmd_1).end()){
-                cout << "Error: unknown store" << endl;
-            }
-            else{
-                //products here is vector<Product>
-                for(auto &products:allDataStored.at(cmd_1).at(cmd_2)){
-                    cout << products.product_name << " ";
-                    if(products.price == -1.0){cout << "out of stock" << endl;}
-                    //set the format of the figure ( = %.2f)
-                    else{cout << fixed << setprecision(2) << products.price << endl;}
-                }
-            }
+            selection_print(allDataStored, cmd_1, cmd_2, amountOfVar);
         }
+
         //this cmd "printall" branch is only for test...
-        //else if (command == "printall"){print_all(&allDataStored);}
+        //else if (command == "printall"){print_all(allDataStored);}
 
         //all other cmd stems are unknown; then we wait for next input from user
         else{cout << "Error: unknown command: " << command << endl;}
@@ -373,8 +353,31 @@ void cheapest_print(MarketData& allDataStored, set<string>& allProducts,
 }
 //cmd using 2 variables
 void selection_print(MarketData& allDataStored,
-                     string cmd_1, string cmd_2, int amountOfVar);
-
+                     string cmd_1, string cmd_2, int amountOfVar){
+    /*cmd "selection" finds out the all the products
+     *with given chainName(cmd_1) and location(cmd_2)
+     *thus should have only 2 variables
+     *(cmd_border should be empty) */
+    if(amountOfVar != 2){cout << "Error: error in command " << "selection" << endl;}
+    //when chainName(cmd_1) can't be found
+    else if(allDataStored.find(cmd_1) == allDataStored.end()){
+        cout << "Error: unknown chain name" << endl;
+    }
+    //when location(cmd_2) can't be found
+    else if(allDataStored.at(cmd_1).find(cmd_2) == allDataStored.at(cmd_1).end()){
+        cout << "Error: unknown store" << endl;
+    }
+    else{
+        //products here is vector<Product>
+        for(auto &products:allDataStored.at(cmd_1).at(cmd_2)){
+            cout << products.product_name << " ";
+            if(products.price == -1.0){cout << "out of stock" << endl;}
+            //set the format of the figure ( = %.2f)
+            else{cout << fixed << setprecision(2) << products.price << endl;}
+        }
+    }
+}
+//cmd only for test
 void print_all(MarketData& allData){
     cout << "Here are the list of all products in all supermarkets:" << endl << endl;
     for(auto& chain:allData){
