@@ -171,7 +171,6 @@ bool read_success(MarketData& allData, set<string>& productList){
     }
     string eachLine;
     while(getline(listFileOB, eachLine)){
-        string eachField;
         stringstream lineStream(eachLine);
         string chainName, storeName, pName, pPriceStr;
         getline(lineStream, chainName, ';');
@@ -207,7 +206,18 @@ bool read_success(MarketData& allData, set<string>& productList){
             }
             //storeName has been stored
             else{
-                allData.at(chainName).at(storeName).insert({eachProduct.product_name, eachProduct});
+                //...but we don't know if this product has price history
+                // Check if the product already exists
+                //1, if not (product_name can't be found
+                if(allData.at(chainName).at(storeName).find(eachProduct.product_name)
+                        == allData.at(chainName).at(storeName).end()){
+                    allData.at(chainName).at(storeName).insert({eachProduct.product_name, eachProduct});
+                }
+                //2, if product has price history
+                else{
+                    //rewrite the price (by manually asign the value
+                    allData.at(chainName).at(storeName).at(eachProduct.product_name).price = eachProduct.price;
+                }
             }
         }
     }
