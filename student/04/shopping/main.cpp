@@ -94,11 +94,16 @@ int read_cmd_and_varNum(string& cmd_0, string& cmd_1, string& cmd_2, string& cmd
  */
 double find_cheapest_price(MarketData& allData, vector<pair<string, string> >& cheapestList, string productName);
 
-void products_print();
-void chains_print();
-void stores_print();
-void cheapest_print();
-void selection_print();
+//cmds using no variable
+void products_print(set<string>& allProducts, int amountOfVar);
+void chains_print(MarketData& allDataStored, int amountOfVar);
+//cmds using only 1 variable
+void stores_print(MarketData& allDataStored, string cmd_1, int amountOfVar);
+void cheapest_print(MarketData& allDataStored, set<string>& allProducts,
+                    string cmd_1, int amountOfVar);
+//cmd using 2 variables
+void selection_print(MarketData& allDataStored,
+                     string cmd_1, string cmd_2, int amountOfVar);
 
 //a test function; print all the data formatted. Not required in this project.
 void print_all(MarketData& allData);
@@ -124,76 +129,16 @@ int main(void){
             else{return EXIT_SUCCESS;}
         }
         else if (command == "products"){
-            /*cmd "products" directly print out all products
-             *regardless of the chain or location
-             *thus should have no variable
-             *(cmd_1, cmd_2, and cmd_border should be empty) */
-            if(amountOfVar != 0){cout << "Error: error in command " << command << endl;}
-            else{
-                //product names were directly stored in (set)allProducts
-                for(auto &product:allProducts){
-                    cout << product << endl;
-                }
-            }
+            products_print(allProducts, amountOfVar);
         }
         else if (command == "chains"){
-            /*cmd "chains" directly print out all chainName
-             *regardless of other factors
-             *thus should have no variable
-             *(cmd_1, cmd_2, and cmd_border should be empty) */
-            if(amountOfVar != 0){cout << "Error: error in command " << command << endl;}
-            else{
-                //chain here is pair<chainName, map<store, vector<product> > >
-                for(auto &chain:allDataStored){
-                    cout << chain.first << endl;
-                }
-            }
+            chains_print(allDataStored, amountOfVar);
         }
         else if (command == "stores"){
-            /*cmd "stores" prints out all locations of a certain chainName
-             *thus should have only 1 variable
-             *(cmd_2 and cmd_border should be empty) */
-            if(amountOfVar != 1){cout << "Error: error in command " << command << endl;}
-            /*cmd_1 here is the target chainName from user
-             *if not found in the keys of the map... */
-            else if(allDataStored.find(cmd_1) == allDataStored.end()){
-                cout << "Error: unknown chain name" << endl;
-            }
-            else{
-                /*stores here is
-                 *map<location, vector<product> > under the given chainName */
-                for(auto &stores:allDataStored.at(cmd_1)){
-                    cout << stores.first << endl;
-                }
-            }
+            stores_print(allDataStored, cmd_1, amountOfVar);
         }
         else if (command == "cheapest"){
-            /*cmd "cheapest" finds out the list of chain-location with given productName
-             *thus should have only 1 variable
-             *cmd_2 and cmd_border should be empty) */
-            if(amountOfVar != 1){cout << "Error: error in command " << command << endl;}
-            //(set)allProducts directly stored all occured productName
-            else if(allProducts.find(cmd_1) == allProducts.end()){
-                cout << "The product is not part of product selection" << endl;
-            }
-            else{
-                //set a vector made by pair<chainName, location>
-                vector<pair<string, string> > cheapestList;
-                /*receive the lowest price searched by this function;
-                 *read the content of allDataStored,
-                 *directly change the content of cheapestList*/
-                double price = find_cheapest_price(allDataStored, cheapestList, cmd_1);
-                if(price == -1.0){
-                    cout << "The product is temporarily out of stock everywhere" << endl;
-                }
-                else{
-                    //set the format of output figure ( = %.2f)
-                    cout << fixed << setprecision(2) << price << " " << "euros" << endl;
-                    for(auto &eachStore:cheapestList){
-                        cout << eachStore.first << " " << eachStore.second << endl;
-                    }
-                }
-            }
+            cheapest_print(allDataStored, allProducts, cmd_1, amountOfVar);
         }
         else if (command == "selection"){
             /*cmd "selection" finds out the all the products
@@ -211,7 +156,7 @@ int main(void){
             }
             else{
                 //products here is vector<Product>
-                for(auto products:allDataStored.at(cmd_1).at(cmd_2)){
+                for(auto &products:allDataStored.at(cmd_1).at(cmd_2)){
                     cout << products.product_name << " ";
                     if(products.price == -1.0){cout << "out of stock" << endl;}
                     //set the format of the figure ( = %.2f)
@@ -350,11 +295,85 @@ double find_cheapest_price(MarketData& allData, vector<pair<string, string> >& c
     return lowestPrice;
 }
 
-void products_print();
-void chains_print();
-void stores_print();
-void cheapest_print();
-void selection_print();
+//cmds using no variable
+void products_print(set<string>& allProducts, int amountOfVar){
+    /*cmd "products" directly print out all products
+     *regardless of the chain or location
+     *thus should have no variable
+     *(cmd_1, cmd_2, and cmd_border should be empty) */
+    if(amountOfVar != 0){cout << "Error: error in command " << "products" << endl;}
+    else{
+        //product names were directly stored in (set)allProducts
+        for(auto &product:allProducts){
+            cout << product << endl;
+        }
+    }
+}
+
+void chains_print(MarketData& allDataStored, int amountOfVar){
+    /*cmd "chains" directly print out all chainName
+     *regardless of other factors
+     *thus should have no variable
+     *(cmd_1, cmd_2, and cmd_border should be empty) */
+    if(amountOfVar != 0){cout << "Error: error in command " << "chains" << endl;}
+    else{
+        //chain here is pair<chainName, map<store, vector<product> > >
+        for(auto &chain:allDataStored){
+            cout << chain.first << endl;
+        }
+    }
+}
+//cmds using only 1 variable
+void stores_print(MarketData& allDataStored, string cmd_1, int amountOfVar){
+    /*cmd "stores" prints out all locations of a certain chainName
+     *thus should have only 1 variable
+     *(cmd_2 and cmd_border should be empty) */
+    if(amountOfVar != 1){cout << "Error: error in command " << "stores" << endl;}
+    /*cmd_1 here is the target chainName from user
+     *if not found in the keys of the map... */
+    else if(allDataStored.find(cmd_1) == allDataStored.end()){
+        cout << "Error: unknown chain name" << endl;
+    }
+    else{
+        /*stores here is
+         *map<location, vector<product> > under the given chainName */
+        for(auto &stores:allDataStored.at(cmd_1)){
+            cout << stores.first << endl;
+        }
+    }
+}
+void cheapest_print(MarketData& allDataStored, set<string>& allProducts,
+                    string cmd_1, int amountOfVar){
+    /*cmd "cheapest" finds out the list of chain-location with given productName
+     *thus should have only 1 variable
+     *cmd_2 and cmd_border should be empty) */
+    if(amountOfVar != 1){cout << "Error: error in command " << "cheapest" << endl;}
+    //(set)allProducts directly stored all occured productName
+    else if(allProducts.find(cmd_1) == allProducts.end()){
+        cout << "The product is not part of product selection" << endl;
+    }
+    else{
+        //set a vector made by pair<chainName, location>
+        vector<pair<string, string> > cheapestList;
+        /*receive the lowest price searched by this function;
+         *read the content of allDataStored,
+         *directly change the content of cheapestList*/
+        double price = find_cheapest_price(allDataStored, cheapestList, cmd_1);
+        if(price == -1.0){
+            cout << "The product is temporarily out of stock everywhere" << endl;
+        }
+        else{
+            //set the format of output figure ( = %.2f)
+            cout << fixed << setprecision(2) << price << " " << "euros" << endl;
+            for(auto &eachStore:cheapestList){
+                cout << eachStore.first << " " << eachStore.second << endl;
+            }
+        }
+    }
+}
+//cmd using 2 variables
+void selection_print(MarketData& allDataStored,
+                     string cmd_1, string cmd_2, int amountOfVar);
 
 void print_all(MarketData& allData){
     cout << "Here are the list of all products in all supermarkets:" << endl << endl;
