@@ -59,7 +59,7 @@ using MarketData = map<string, map<string, vector<Product> > >;
  * @return a boolean value telling the status of reading result;
  *         only when error or data-missing happens, return false
  */
-bool read_success(MarketData* allData, set<string>* productList);
+bool read_success(MarketData& allData, set<string>& productList);
 /**
  * @brief read_cmd_and_varNum - read command from user;
  *        split the command by the space;
@@ -81,7 +81,7 @@ bool read_success(MarketData* allData, set<string>* productList);
  *        (max 2 variables needed)
  * @return the amount of variable to one command
  */
-int read_cmd_and_varNum(string* cmd_0, string* cmd_1, string* cmd_2, string* cmd_border);
+int read_cmd_and_varNum(string& cmd_0, string& cmd_1, string& cmd_2, string& cmd_border);
 /**
  * @brief find_cheapest_price - based on all the data, with given target product name,
  *        the func. searches the lowest price
@@ -92,23 +92,29 @@ int read_cmd_and_varNum(string* cmd_0, string* cmd_1, string* cmd_2, string* cmd
  * @param productName         - product we are searching for the lowset price
  * @return the lowest price we found; if all out-of-stock, return -1.0 for identifying
  */
-double find_cheapest_price(MarketData* allData, vector<pair<string, string> >* cheapestList, string productName);
+double find_cheapest_price(MarketData& allData, vector<pair<string, string> >& cheapestList, string productName);
+
+void products_print();
+void chains_print();
+void stores_print();
+void cheapest_print();
+void selection_print();
 
 //a test function; print all the data formatted. Not required in this project.
-void print_all(MarketData* allData);
+void print_all(MarketData& allData);
 
 int main(void){
     MarketData allDataStored;
     set<string> allProducts;
     //read the file and receive the file-reading status
-    bool readStatusSuccess = read_success(&allDataStored, &allProducts);
+    bool readStatusSuccess = read_success(allDataStored, allProducts);
     if(!readStatusSuccess){return EXIT_FAILURE;}
     while (readStatusSuccess) {
         cout << "> ";
         string command, cmd_1, cmd_2, cmd_border;
         /*get the num of non-empty strings after command
          *thus it's the amount of variable */
-        int amountOfVar = read_cmd_and_varNum(&command, &cmd_1, &cmd_2, &cmd_border);
+        int amountOfVar = read_cmd_and_varNum(command, cmd_1, cmd_2, cmd_border);
 
         if(command == "quit"){
             /*cmd "quit" directly terminates the program
@@ -176,7 +182,7 @@ int main(void){
                 /*receive the lowest price searched by this function;
                  *read the content of allDataStored,
                  *directly change the content of cheapestList*/
-                double price = find_cheapest_price(&allDataStored, &cheapestList, cmd_1);
+                double price = find_cheapest_price(allDataStored, cheapestList, cmd_1);
                 if(price == -1.0){
                     cout << "The product is temporarily out of stock everywhere" << endl;
                 }
@@ -225,7 +231,7 @@ int main(void){
 /* process the input csv data; when error, cout error message
  * at the sametime, assign the value to the dataset
  * finally, return boolean value to tell the status of data-reading */
-bool read_success(MarketData* allData, set<string>* productList){
+bool read_success(MarketData& allData, set<string>& productList){
     string inputFName;
     cout << "Input file: ";
     getline(cin, inputFName);
@@ -254,7 +260,7 @@ bool read_success(MarketData* allData, set<string>* productList){
             return false;}
 
         //make the product list
-        productList->insert(pName);
+        productList.insert(pName);
 
         double pPriceDouble;
         if(pPriceStr == "out-of-stock"){pPriceDouble = -1.0;}
@@ -262,21 +268,21 @@ bool read_success(MarketData* allData, set<string>* productList){
 
         Product eachProduct = {pName, pPriceDouble};
         //chainName hasn't been stored
-        if(allData->find(chainName) == allData->end()){
-            allData->insert({chainName, {{storeName, {eachProduct}}}});
+        if(allData.find(chainName) == allData.end()){
+            allData.insert({{chainName, {{storeName, {eachProduct}}}}});
         }
         //chainName has been stored
         else{
             //...but storeName hasn't been stored
-            if(allData->at(chainName).find(storeName) == allData->at(chainName).end()){
-                allData->at(chainName).insert({storeName, {eachProduct}});
+            if(allData.at(chainName).find(storeName) == allData.at(chainName).end()){
+                allData.at(chainName).insert({{storeName, {eachProduct}}});
             }
             //storeName has been stored
             else{
                 //...but we don't know if this product has price history
                 // Check if the product already exists
                 bool productFound = false;
-                for (auto& product : allData->at(chainName).at(storeName)) {
+                for (auto& product : allData.at(chainName).at(storeName)) {
                     if (eachProduct.product_name == product.product_name) {
                         product.price = eachProduct.price;  // Update the price
                         productFound = true;
@@ -285,14 +291,14 @@ bool read_success(MarketData* allData, set<string>* productList){
                 }
                 // If the product was not found, add it
                 if (!productFound) {
-                    allData->at(chainName).at(storeName).push_back(eachProduct);
+                    allData.at(chainName).at(storeName).push_back(eachProduct);
                 }
             }
         }
     }
     listFileOB.close();
     //finally, sort the vector by productName
-    for(auto& chainName:*allData){
+    for(auto& chainName:allData){
         for(auto& storeName:chainName.second){
             std::sort(storeName.second.begin(), storeName.second.end(), [](const Product& a, const Product& b){
                 return a.product_name < b.product_name;
@@ -302,25 +308,25 @@ bool read_success(MarketData* allData, set<string>* productList){
     return true;
 }
 
-int read_cmd_and_varNum(string* cmd_0, string* cmd_1, string* cmd_2, string* cmd_border){
+int read_cmd_and_varNum(string& cmd_0, string& cmd_1, string& cmd_2, string& cmd_border){
     string lineCMD;
     getline(cin, lineCMD);
     stringstream streamCMD(lineCMD);
 
-    streamCMD >> *cmd_0;
-    streamCMD >> *cmd_1;
-    streamCMD >> *cmd_2;
-    getline(streamCMD, *cmd_border);
+    streamCMD >> cmd_0;
+    streamCMD >> cmd_1;
+    streamCMD >> cmd_2;
+    getline(streamCMD, cmd_border);
 
-    if(!(*cmd_border).empty()){return 9;}
-        else if(!(*cmd_2).empty()){return 2;}
-        else if(!(*cmd_1).empty()){return 1;}
+    if(!cmd_border.empty()){return 9;}
+        else if(!cmd_2.empty()){return 2;}
+        else if(!cmd_1.empty()){return 1;}
         else{return 0;}
 }
 
-double find_cheapest_price(MarketData* allData, vector<pair<string, string> >* cheapestList, string productName){
+double find_cheapest_price(MarketData& allData, vector<pair<string, string> >& cheapestList, string productName){
     double lowestPrice = -1.0;
-    for(auto& chains:*allData){
+    for(auto& chains:allData){
         for(auto& stores:chains.second){
             for(auto& products:stores.second){
                 if(products.product_name == productName){
@@ -332,11 +338,11 @@ double find_cheapest_price(MarketData* allData, vector<pair<string, string> >* c
             }
         }
     }
-    for(auto& chains:*allData){
+    for(auto& chains:allData){
         for(auto& stores:chains.second){
             for(auto& products:stores.second){
                 if(products.price == lowestPrice && lowestPrice != -1.0){
-                    cheapestList->push_back({chains.first, stores.first});
+                    cheapestList.push_back({chains.first, stores.first});
                 }
             }
         }
@@ -344,9 +350,15 @@ double find_cheapest_price(MarketData* allData, vector<pair<string, string> >* c
     return lowestPrice;
 }
 
-void print_all(MarketData* allData){
+void products_print();
+void chains_print();
+void stores_print();
+void cheapest_print();
+void selection_print();
+
+void print_all(MarketData& allData){
     cout << "Here are the list of all products in all supermarkets:" << endl << endl;
-    for(auto& chain:*allData){
+    for(auto& chain:allData){
         cout << chain.first << endl;
         for(auto& store:chain.second){
             cout << "    " << store.first << endl;
