@@ -44,7 +44,9 @@ struct Product {
 };
 /* The data structure here is used to steore all the data from the csv file.
  * It can be interpreted in this way:
- * map<chainName, map<locationName, map<eachProduct.product_name, eachProduct> > >
+ * map<chainName,
+ *      map<locationName,
+ *              map<eachProduct.product_name, eachProduct> > >
  * */
 using MarketData = map<string, map<string, map<string, Product> > >;
 /**
@@ -112,7 +114,7 @@ void selection_print(MarketData& allDataStored,
 void print_all(MarketData& allData);
 
 int main(void){
-    MarketData allDataStored = {};
+    MarketData allDataStored = {{}};
     set<string> allProducts = {};
     //read the file and receive the file-reading status
     bool readStatusSuccess = read_success(allDataStored, allProducts);
@@ -521,9 +523,10 @@ void print_all(MarketData& allData){
                 }
                 else{
                     //set output as %.2f
-                    cout << "        " << products.second.product_name << "  \t"
-                            << fixed << setprecision(2)
-                            << products.second.price << endl;
+                    cout << "        "
+                         << products.second.product_name << "  \t"
+                         << fixed << setprecision(2)
+                         << products.second.price << endl;
                 }
             }
         }
