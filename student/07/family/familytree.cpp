@@ -2,6 +2,7 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -140,14 +141,58 @@ void Familytree::printSiblings(Params params, ostream &output) const
         return;
     }
     output << thisPerson_name << " has " << namelist.size() << " siblings:" << endl;
-    for(auto& parentName:namelist){
-        output << parentName << endl;
+    for(auto& siblingsName:namelist){
+        output << siblingsName << endl;
     }
 }
 
 void Familytree::printCousins(Params params, std::ostream &output) const
 {
+    string thisPerson_name = params.at(0);
+    if(people_map_.find(thisPerson_name) == people_map_.end()){
+        output << "Error. " << thisPerson_name << " not found." << endl;
+        return;
+    }
+    shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
+    vector<Person*> cousinsParentVector = {};
+    //for each parent
+    for(auto& parent:thisPerson->parents_){
+        if(!parent){
+            continue;
+        }
+        //find grandparents (parents of parents)
+        for(auto& grandparent:parent->parents_){
+            if(!grandparent){
+                continue;
+            }
+            cousinsParentVector.insert(cousinsParentVector.end(),
+                                  grandparent->children_.begin(), grandparent->children_.end());
+            //cousins' parents are the siblings of this person's parents
+            cousinsParentVector.erase(
+                        remove(cousinsParentVector.begin(),
+                               cousinsParentVector.end(),
+                               parent),
+                        cousinsParentVector.end());
+        }
+    }
+    //cousins are cousins' parents' children
+    vector<Person*> cousinsVector = {};
+    for(auto& cousinsParent:cousinsParentVector){
+        cousinsVector.insert(cousinsVector.end(),
+                              cousinsParent->children_.begin(), cousinsParent->children_.end());
+    }
+
+    IdSet namelist = vectorToIdSet(cousinsVector);
+
+    if(namelist.empty()){
+        output << thisPerson_name << " has no cousins." << endl;
+        return;
+    }
+    output << thisPerson_name << " has " << namelist.size() << " siblings:" << endl;
+    for(auto& cousinsName:namelist){
+        output << cousinsName << endl;
+    }
 }
 
 void Familytree::printTallestInLineage(Params params, std::ostream &output) const
