@@ -18,6 +18,8 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <memory>
+#include <map>
 
 using Params = const std::vector<std::string>&;
 
@@ -183,6 +185,8 @@ private:
      */
     void printGroup(const std::string& id, const std::string& group,
                     const IdSet& container, std::ostream& output) const;
+    //below are member data i set
+    std::map<std::string, std::shared_ptr<Person>> people_map_;
 };
 
 #endif // FAMILYTREE_HH
