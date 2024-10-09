@@ -278,12 +278,16 @@ void Familytree::printShortestInLineage(Params params, std::ostream &output) con
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 {
-
+    if(0){
+        output << params.at(0);
+    }
 }
 
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 {
-
+    if(0){
+        output << params.at(0);
+    }
 }
 
 Person *Familytree::getPointer(const std::string &id) const
