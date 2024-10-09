@@ -23,7 +23,7 @@ void Familytree::addNewPerson(const string &id, int height, ostream &output)
     people_map_.insert({{id, thisPerson}});
 
     //test
-    //testTEST(output);
+    //testTEST(output, "addNewPerson");
 }
 
 void Familytree::addRelation(const string &child,
@@ -53,7 +53,7 @@ void Familytree::addRelation(const string &child,
     }
 
     //test
-    //testTEST(output);
+    //testTEST(output, "addRelation");
     if(0){
         output << "ERROR";
     }
@@ -332,7 +332,8 @@ bool Familytree::is_personNotFound(string& thisPerson_name, Person *&thisPerson,
     thisPerson = getPointer(thisPerson_name);
     if(!thisPerson){
         printNotFound(thisPerson_name, output);
-        /* if not found, the outer if statement using this function will be true
+        /* if not found,
+         * the outer if statement using this function will be true
          * which means the person not found
          * then the branch would be quitted */
         return true;
@@ -340,9 +341,9 @@ bool Familytree::is_personNotFound(string& thisPerson_name, Person *&thisPerson,
     return false;
 }
 
-void Familytree::testTEST(ostream &output)
+void Familytree::testTEST(ostream &output, string type)
 {
     static int counter = 1;
-    output << "No." << counter << " person added." << endl;
+    output << "No." << counter << " " << type << " info added." << endl;
     counter++;
 }

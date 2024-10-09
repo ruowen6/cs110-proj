@@ -198,7 +198,7 @@ private:
 
 
     //only for test
-    void testTEST(std::ostream& output);
+    void testTEST(std::ostream& output, std::string& type);
 };
 
 #endif // FAMILYTREE_HH
