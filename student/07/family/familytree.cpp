@@ -31,6 +31,7 @@ void Familytree::addRelation(const string &child,
 {//what to do in this function with the output stream??
     Person* parent_1 = nullptr;
     Person* parent_2 = nullptr;
+    //if the parents added as members of this familytree
     if(people_map_.find(parents[0]) != people_map_.end()){
             parent_1 = people_map_.at(parents[0]).get();
     }
@@ -38,7 +39,7 @@ void Familytree::addRelation(const string &child,
             parent_2 = people_map_.at(parents[1]).get();
     }
     //find the person and add the parents relation
-    shared_ptr<Person> child_to_add;
+    shared_ptr<Person> child_to_add = nullptr;
     for(auto& thisPerson:people_map_){
         if(thisPerson.first == child){
             child_to_add = thisPerson.second;
@@ -46,9 +47,12 @@ void Familytree::addRelation(const string &child,
             break;
         }
     }
-    //if when adding relation, the child does not exist...
+    /* after adding relation this round, if child_to_add is nullptr
+     * it means the child does not exist...
+     * thus some error happens to the datafile */
     if(!child_to_add){
         printNotFound(child, output);
+        return;
     }
     //find the parent of that person and add children relation
     for(auto parent:{parent_1, parent_2}){
