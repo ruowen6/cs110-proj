@@ -115,7 +115,34 @@ void Familytree::printParents(Params params, ostream &output) const
 
 void Familytree::printSiblings(Params params, ostream &output) const
 {
+    string thisPerson_name = params.at(0);
+    if(people_map_.find(thisPerson_name) == people_map_.end()){
+        output << "Error. " << thisPerson_name << " not found." << endl;
+        return;
+    }
+    shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
+    vector<Person*> siblingsVector = {};
+    for(auto& parent:thisPerson->parents_){
+        if(!parent){
+            continue;
+        }
+        siblingsVector.insert(siblingsVector.end(),
+                              parent->children_.begin(), parent->children_.end());
+    }
+
+    IdSet namelist = vectorToIdSet(siblingsVector);
+    //siblings are the children from this person's parent but except this person
+    namelist.erase(thisPerson_name);
+
+    if(namelist.empty()){
+        output << thisPerson_name << " has no siblings." << endl;
+        return;
+    }
+    output << thisPerson_name << " has " << namelist.size() << " siblings:" << endl;
+    for(auto& parentName:namelist){
+        output << parentName << endl;
+    }
 }
 
 void Familytree::printCousins(Params params, std::ostream &output) const
