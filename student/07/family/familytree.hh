@@ -195,6 +195,10 @@ private:
                                        IdSet& descendantsList,
                                        int maxDepth = 1, int currentDepth = 1) const;
 
+    void collectAncestors_with_depth(const std::string& id,
+                                       IdSet& ancestorsList,
+                                       int maxDepth = 1, int currentDepth = 1) const;
+
     bool is_personNotFound (std::string& thisPerson_name, Person*& thisPerson,
                             Params params, std::ostream& output) const;
 

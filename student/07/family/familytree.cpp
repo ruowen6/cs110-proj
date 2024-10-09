@@ -84,23 +84,18 @@ void Familytree::printChildren(Params params, std::ostream &output) const
 
 void Familytree::printParents(Params params, ostream &output) const
 {
+    string groupName = "parents";
     string thisPerson_name = "";
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
-    auto parentVector = thisPerson->parents_;
-    IdSet namelist = vectorToIdSet(parentVector);
+    IdSet namelist = {};
 
-    if(namelist.empty()){
-        output << thisPerson_name << " has no parents." << endl;
-        return;
-    }
-    output << thisPerson_name << " has " << namelist.size() << " parents:" << endl;
-    for(auto& parentName:namelist){
-        output << parentName << endl;
-    }
+    collectAncestors_with_depth(thisPerson_name, namelist);
+
+    printGroup(thisPerson_name, groupName, namelist, output);
 }
 
 void Familytree::printSiblings(Params params, ostream &output) const
@@ -289,11 +284,25 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 {
+    string groupName = "grandparents";
     string thisPerson_name = "";
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
+
+    IdSet namelist = {};
+    int depth = stoi(params.at(1)) + 1;
+
+    collectAncestors_with_depth(thisPerson_name, namelist, depth);
+
+    if(!(depth - 1)){
+        output << WRONG_LEVEL << endl;
+        return;
+    }
+
+    printGroup(thisPerson_name, groupName, namelist, output, depth - 1);
+
 }
 
 Person *Familytree::getPointer(const std::string &id) const
@@ -363,7 +372,7 @@ void Familytree::collectDescendants(const string &id, IdSet &descendantsList) co
     }
 }
 
-void Familytree::collectDescendants_with_depth(const std::string &id,
+void Familytree::collectDescendants_with_depth(const string &id,
                                                IdSet &descendantsList,
                                                int maxDepth,
                                                int currentDepth) const
@@ -384,6 +393,34 @@ void Familytree::collectDescendants_with_depth(const std::string &id,
                 collectDescendants_with_depth(child->id_,
                                               descendantsList,
                                               maxDepth, currentDepth + 1);
+            }
+        }
+    }
+}
+
+void Familytree::collectAncestors_with_depth(const string &id,
+                                             IdSet &ancestorsList,
+                                             int maxDepth,
+                                             int currentDepth) const
+{
+    if(currentDepth > maxDepth){
+        return;
+    }
+    Person* eachPerson = people_map_.at(id).get();
+    if(!eachPerson){
+        return;
+    }
+    for(auto& parent:eachPerson->parents_){
+        if(!parent){
+            continue;
+        }
+        else{
+            if(currentDepth == maxDepth){
+                ancestorsList.insert(parent->id_);
+            }
+            else{
+                collectAncestors_with_depth(parent->id_, ancestorsList,
+                                            maxDepth, currentDepth + 1);
             }
         }
     }
