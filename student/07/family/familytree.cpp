@@ -28,7 +28,7 @@ void Familytree::addNewPerson(const string &id, int height, ostream &output)
 
 void Familytree::addRelation(const string &child,
                              const vector<string> &parents, ostream &output)
-{
+{//what to do in this function with the output stream??
     Person* parent_1 = nullptr;
     Person* parent_2 = nullptr;
     if(people_map_.find(parents[0]) != people_map_.end()){
@@ -65,10 +65,9 @@ void Familytree::printPersons(Params, ostream &output) const
 
 void Familytree::printChildren(Params params, std::ostream &output) const
 {
-    string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
@@ -87,10 +86,9 @@ void Familytree::printChildren(Params params, std::ostream &output) const
 
 void Familytree::printParents(Params params, ostream &output) const
 {
-    string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
@@ -109,10 +107,9 @@ void Familytree::printParents(Params params, ostream &output) const
 
 void Familytree::printSiblings(Params params, ostream &output) const
 {
-    string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
@@ -141,10 +138,9 @@ void Familytree::printSiblings(Params params, ostream &output) const
 
 void Familytree::printCousins(Params params, std::ostream &output) const
 {
-    string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
@@ -184,7 +180,7 @@ void Familytree::printCousins(Params params, std::ostream &output) const
         output << thisPerson_name << " has no cousins." << endl;
         return;
     }
-    output << thisPerson_name << " has " << namelist.size() << " siblings:" << endl;
+    output << thisPerson_name << " has " << namelist.size() << " cousins:" << endl;
     for(auto& cousinsName:namelist){
         output << cousinsName << endl;
     }
@@ -192,10 +188,9 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 
 void Familytree::printTallestInLineage(Params params, std::ostream &output) const
 {
-    string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
@@ -233,10 +228,9 @@ void Familytree::printTallestInLineage(Params params, std::ostream &output) cons
 
 void Familytree::printShortestInLineage(Params params, std::ostream &output) const
 {
-    string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
@@ -262,18 +256,24 @@ void Familytree::printShortestInLineage(Params params, std::ostream &output) con
     if(shortestPerson_name == thisPerson_name){
         output << "With the height of " << shortestPerson_height << ", "
                 << thisPerson_name
-                << " is the tallest person in his/her lineage." << endl;
+                << " is the shortest person in his/her lineage." << endl;
     }
     else{
         output << "With the height of " << shortestPerson_height << ", "
                 << shortestPerson_name
-                << " is the tallest person in "
+                << " is the shortest person in "
                 << thisPerson_name << "'s lineage." << endl;
     }
 }
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 {
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
+        return;
+    }
+
     if(0){
         output << params.at(0);
     }
@@ -281,6 +281,12 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 {
+    string thisPerson_name = "";
+    Person* thisPerson = nullptr;
+    if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
+        return;
+    }
+
     if(0){
         output << params.at(0);
     }
@@ -322,6 +328,21 @@ void Familytree::collectDescendants(const string &id, IdSet &descendantsList) co
             collectDescendants(child->id_, descendantsList);
         }
     }
+}
+
+bool Familytree::is_personNotFound(string& thisPerson_name, Person *&thisPerson,
+                                   Params params, ostream& output) const
+{
+    thisPerson_name = params.at(0);
+    thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
+        /* if not found, the outer if statement using this function will be true
+         * which means the person not found
+         * then the branch would be quitted */
+        return true;
+    }
+    return false;
 }
 
 void Familytree::testTEST(ostream &output)

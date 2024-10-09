@@ -191,7 +191,11 @@ private:
 
     void collectDescendants(const std::string& id, IdSet& descendantsList) const;
 
+    bool is_personNotFound (std::string& thisPerson_name, Person*& thisPerson,
+                            Params params, std::ostream& output) const;
+
     PeopleMap people_map_;
+
 
     //only for test
     void testTEST(std::ostream& output);
