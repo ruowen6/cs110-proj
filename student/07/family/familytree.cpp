@@ -44,6 +44,9 @@ void Familytree::addRelation(const string &child,
         if(thisPerson.first == child){
             child_to_add = thisPerson.second;
             child_to_add->parents_ = {parent_1, parent_2};
+            /* we add relation for one person each round,
+             * so once the child is found, we don't need to go through
+             * he items remained in this for loop */
             break;
         }
     }
