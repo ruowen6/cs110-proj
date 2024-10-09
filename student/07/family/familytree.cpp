@@ -78,16 +78,16 @@ void Familytree::printChildren(Params params, std::ostream &output) const
     }
     shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
-    auto childrenSet = thisPerson->children_;
-    int childrenAmount = childrenSet.size();
+    auto childrenVector = thisPerson->children_;
+    IdSet namelist = vectorToIdSet(childrenVector);
 
-    if(!childrenAmount){
-        output << thisPerson_name << "has no children." << endl;
+    if(namelist.empty()){
+        output << thisPerson_name << " has no children." << endl;
         return;
     }
-    output << thisPerson_name << "has " << childrenAmount << " children:" << endl;
-    for(auto child:childrenSet){
-        output << child->id_ << endl;
+    output << thisPerson_name << " has " << namelist.size() << " children:" << endl;
+    for(auto& childName:namelist){
+        output << childName << endl;
     }
 }
 
@@ -100,25 +100,16 @@ void Familytree::printParents(Params params, ostream &output) const
     }
     shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
-    auto parentSet = thisPerson->parents_;
-    int parentAmount = 0;
-    for(auto parent:parentSet){
-        if(!parent){
-            continue;
-        }
-        parentAmount++;
-    }
+    auto parentVector = thisPerson->parents_;
+    IdSet namelist = vectorToIdSet(parentVector);
 
-    if(!parentAmount){
-        output << thisPerson_name << "has no parents." << endl;
+    if(namelist.empty()){
+        output << thisPerson_name << " has no parents." << endl;
         return;
     }
-    output << thisPerson_name << "has " << parentAmount << " parents:" << endl;
-    for(auto parent:parentSet){
-        if(!parent){
-            continue;
-        }
-        output << parent->id_ << endl;
+    output << thisPerson_name << " has " << namelist.size() << " parents:" << endl;
+    for(auto& parentName:namelist){
+        output << parentName << endl;
     }
 }
 
@@ -150,4 +141,15 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 {
 
+}
+
+IdSet Familytree::vectorToIdSet(const std::vector<Person *> &container) const
+{
+    IdSet idList = {};
+    for(auto person:container){
+        if(person){
+            idList.insert(person->id_);
+        }
+    }
+    return idList;
 }
