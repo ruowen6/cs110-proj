@@ -100,33 +100,28 @@ void Familytree::printParents(Params params, ostream &output) const
 
 void Familytree::printSiblings(Params params, ostream &output) const
 {
+    string groupName = "siblings";
     string thisPerson_name = "";
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
-    vector<Person*> siblingsVector = {};
-    for(auto& parent:thisPerson->parents_){
-        if(!parent){
-            continue;
-        }
-        siblingsVector.insert(siblingsVector.end(),
-                              parent->children_.begin(), parent->children_.end());
-    }
+    IdSet namelist = {};
+    IdSet namelist_parent = {};
 
-    IdSet namelist = vectorToIdSet(siblingsVector);
-    //siblings are the children from this person's parent but except this person
+    //find the parents
+    collectAncestors_with_depth(thisPerson_name, namelist_parent);
+
+    //find the children of this person's parents
+    for(auto& parentName:namelist_parent){
+        collectDescendants_with_depth(parentName, namelist);
+    }
+    //siblings are the children from this person's parent
+    //but except this person her/himself
     namelist.erase(thisPerson_name);
 
-    if(namelist.empty()){
-        output << thisPerson_name << " has no siblings." << endl;
-        return;
-    }
-    output << thisPerson_name << " has " << namelist.size() << " siblings:" << endl;
-    for(auto& siblingsName:namelist){
-        output << siblingsName << endl;
-    }
+    printGroup(thisPerson_name, groupName, namelist, output);
 }
 
 void Familytree::printCousins(Params params, std::ostream &output) const
