@@ -126,52 +126,40 @@ void Familytree::printSiblings(Params params, ostream &output) const
 
 void Familytree::printCousins(Params params, std::ostream &output) const
 {
+    string groupName = "cousins";
     string thisPerson_name = "";
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
-    vector<Person*> cousinsParentVector = {};
-    //for each parent
-    for(auto& parent:thisPerson->parents_){
-        if(!parent){
-            continue;
-        }
-        //find grandparents (parents of parents)
-        for(auto& grandparent:parent->parents_){
-            if(!grandparent){
-                continue;
-            }
-            cousinsParentVector.insert(cousinsParentVector.end(),
-                                  grandparent->children_.begin(),
-                                       grandparent->children_.end());
-            //cousins' parents are the siblings of this person's parents
-            cousinsParentVector.erase(
-                        remove(cousinsParentVector.begin(),
-                               cousinsParentVector.end(),
-                               parent),
-                        cousinsParentVector.end());
-        }
+    IdSet namelist = {};
+    IdSet namelist_parents = {};
+    IdSet namelist_grandparents = {};
+    IdSet namelist_siblings_of_parents = {};
+
+    //find the parents
+    collectAncestors_with_depth(thisPerson_name, namelist_parents);
+
+    //find the grandparents
+    collectAncestors_with_depth(thisPerson_name, namelist_grandparents, 2);
+
+    //find the siblings of the person's parents
+    for(auto& siblings_of_parents_Name:namelist_grandparents){
+        collectDescendants_with_depth(siblings_of_parents_Name, namelist_siblings_of_parents);
     }
-    //cousins are cousins' parents' children
-    vector<Person*> cousinsVector = {};
-    for(auto& cousinsParent:cousinsParentVector){
-        cousinsVector.insert(cousinsVector.end(),
-                             cousinsParent->children_.begin(),
-                             cousinsParent->children_.end());
+    //parents' siblings are the children from grandparents
+    //but except parents themselves
+    for(auto& parentName:namelist_parents){
+        namelist_siblings_of_parents.erase(parentName);
     }
 
-    IdSet namelist = vectorToIdSet(cousinsVector);
+    //find the children of the siblings of parent
+    for(auto& cousins_Name:namelist_siblings_of_parents){
+        collectDescendants_with_depth(cousins_Name, namelist);
+    }
 
-    if(namelist.empty()){
-        output << thisPerson_name << " has no cousins." << endl;
-        return;
-    }
-    output << thisPerson_name << " has " << namelist.size() << " cousins:" << endl;
-    for(auto& cousinsName:namelist){
-        output << cousinsName << endl;
-    }
+    printGroup(thisPerson_name, groupName, namelist, output);
 }
 
 void Familytree::printTallestInLineage(Params params, std::ostream &output) const
