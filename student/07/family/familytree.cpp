@@ -54,6 +54,9 @@ void Familytree::addRelation(const string &child,
 
     //test
     //testTEST(output);
+    if(0){
+        output << "ERROR";
+    }
 }
 
 void Familytree::printPersons(Params, ostream &output) const
@@ -273,10 +276,6 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
-
-    if(0){
-        output << params.at(0);
-    }
 }
 
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
@@ -285,10 +284,6 @@ void Familytree::printGrandParentsN(Params params, std::ostream &output) const
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
-    }
-
-    if(0){
-        output << params.at(0);
     }
 }
 
