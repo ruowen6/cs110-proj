@@ -192,6 +192,9 @@ private:
     void collectDescendants(const std::string& id, IdSet& descendantsList) const;
 
     PeopleMap people_map_;
+
+    //only for test
+    void testTEST(std::ostream& output);
 };
 
 #endif // FAMILYTREE_HH

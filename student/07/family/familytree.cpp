@@ -23,9 +23,7 @@ void Familytree::addNewPerson(const string &id, int height, ostream &output)
     people_map_.insert({{id, thisPerson}});
 
     //test
-    static int counter = 1;
-    output << "No." << counter << " person added." << endl;
-    counter++;
+    //testTEST(output);
 }
 
 void Familytree::addRelation(const string &child,
@@ -55,9 +53,7 @@ void Familytree::addRelation(const string &child,
     }
 
     //test
-    static int counter = 1;
-    output << "No." << counter << " relation added." << endl;
-    counter++;
+    //testTEST(output);
 }
 
 void Familytree::printPersons(Params, ostream &output) const
@@ -326,4 +322,11 @@ void Familytree::collectDescendants(const string &id, IdSet &descendantsList) co
             collectDescendants(child->id_, descendantsList);
         }
     }
+}
+
+void Familytree::testTEST(ostream &output)
+{
+    static int counter = 1;
+    output << "No." << counter << " person added." << endl;
+    counter++;
 }
