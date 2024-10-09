@@ -9,7 +9,6 @@ using namespace std;
 
 Familytree::Familytree()
 {
-
 }
 
 void Familytree::addNewPerson(const string &id, int height, ostream &output)
@@ -29,12 +28,9 @@ void Familytree::addNewPerson(const string &id, int height, ostream &output)
     counter++;
 }
 
-void Familytree::addRelation(const string &child, const vector<string> &parents, ostream &output)
+void Familytree::addRelation(const string &child,
+                             const vector<string> &parents, ostream &output)
 {
-    //for test
-    static int counter = 1;
-    output << "No." << counter << " relation start" << endl;
-
     Person* parent_1 = nullptr;
     Person* parent_2 = nullptr;
     if(people_map_.find(parents[0]) != people_map_.end()){
@@ -59,6 +55,7 @@ void Familytree::addRelation(const string &child, const vector<string> &parents,
     }
 
     //test
+    static int counter = 1;
     output << "No." << counter << " relation added." << endl;
     counter++;
 }
@@ -73,11 +70,11 @@ void Familytree::printPersons(Params, ostream &output) const
 void Familytree::printChildren(Params params, std::ostream &output) const
 {
     string thisPerson_name = params.at(0);
-    if(people_map_.find(thisPerson_name) == people_map_.end()){
-        output << "Error. " << thisPerson_name << " not found." << endl;
+    Person* thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
         return;
     }
-    shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
     auto childrenVector = thisPerson->children_;
     IdSet namelist = vectorToIdSet(childrenVector);
@@ -95,11 +92,11 @@ void Familytree::printChildren(Params params, std::ostream &output) const
 void Familytree::printParents(Params params, ostream &output) const
 {
     string thisPerson_name = params.at(0);
-    if(people_map_.find(thisPerson_name) == people_map_.end()){
-        output << "Error. " << thisPerson_name << " not found." << endl;
+    Person* thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
         return;
     }
-    shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
     auto parentVector = thisPerson->parents_;
     IdSet namelist = vectorToIdSet(parentVector);
@@ -117,11 +114,11 @@ void Familytree::printParents(Params params, ostream &output) const
 void Familytree::printSiblings(Params params, ostream &output) const
 {
     string thisPerson_name = params.at(0);
-    if(people_map_.find(thisPerson_name) == people_map_.end()){
-        output << "Error. " << thisPerson_name << " not found." << endl;
+    Person* thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
         return;
     }
-    shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
     vector<Person*> siblingsVector = {};
     for(auto& parent:thisPerson->parents_){
@@ -149,11 +146,11 @@ void Familytree::printSiblings(Params params, ostream &output) const
 void Familytree::printCousins(Params params, std::ostream &output) const
 {
     string thisPerson_name = params.at(0);
-    if(people_map_.find(thisPerson_name) == people_map_.end()){
-        output << "Error. " << thisPerson_name << " not found." << endl;
+    Person* thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
         return;
     }
-    shared_ptr<Person> thisPerson = people_map_.at(thisPerson_name);
 
     vector<Person*> cousinsParentVector = {};
     //for each parent
@@ -167,7 +164,8 @@ void Familytree::printCousins(Params params, std::ostream &output) const
                 continue;
             }
             cousinsParentVector.insert(cousinsParentVector.end(),
-                                  grandparent->children_.begin(), grandparent->children_.end());
+                                  grandparent->children_.begin(),
+                                       grandparent->children_.end());
             //cousins' parents are the siblings of this person's parents
             cousinsParentVector.erase(
                         remove(cousinsParentVector.begin(),
@@ -180,7 +178,8 @@ void Familytree::printCousins(Params params, std::ostream &output) const
     vector<Person*> cousinsVector = {};
     for(auto& cousinsParent:cousinsParentVector){
         cousinsVector.insert(cousinsVector.end(),
-                              cousinsParent->children_.begin(), cousinsParent->children_.end());
+                             cousinsParent->children_.begin(),
+                             cousinsParent->children_.end());
     }
 
     IdSet namelist = vectorToIdSet(cousinsVector);
@@ -197,12 +196,84 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 
 void Familytree::printTallestInLineage(Params params, std::ostream &output) const
 {
+    string thisPerson_name = params.at(0);
+    Person* thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
+        return;
+    }
 
+    IdSet namelist;
+    collectDescendants(thisPerson_name, namelist);
+    int thisPerson_height = people_map_.at(thisPerson_name)->height_;
+    int tallestPerson_height = thisPerson_height;
+    //find the tallest height
+    for(auto& eachDescendant:namelist){
+        int eachDescendant_height = people_map_.at(eachDescendant)->height_;
+        if(tallestPerson_height < eachDescendant_height){
+            tallestPerson_height = eachDescendant_height;
+        }
+    }
+    //find the tallest person
+    string tallestPerson_name = thisPerson_name;
+    for(auto& eachDescendant:namelist){
+        int eachDescendant_height = people_map_.at(eachDescendant)->height_;
+        if(eachDescendant_height == tallestPerson_height){
+            tallestPerson_name = eachDescendant;
+        }
+    }
+    if(tallestPerson_name == thisPerson_name){
+        output << "With the height of " << tallestPerson_height << ", "
+                << thisPerson_name
+                << " is the tallest person in his/her lineage." << endl;
+    }
+    else{
+        output << "With the height of " << tallestPerson_height << ", "
+                << tallestPerson_name
+                << " is the tallest person in "
+                << thisPerson_name << "'s lineage." << endl;
+    }
 }
 
 void Familytree::printShortestInLineage(Params params, std::ostream &output) const
 {
+    string thisPerson_name = params.at(0);
+    Person* thisPerson = getPointer(thisPerson_name);
+    if(!thisPerson){
+        printNotFound(thisPerson_name, output);
+        return;
+    }
 
+    IdSet namelist;
+    collectDescendants(thisPerson_name, namelist);
+    int thisPerson_height = people_map_.at(thisPerson_name)->height_;
+    int shortestPerson_height = thisPerson_height;
+    //find the shortest height
+    for(auto& eachDescendant:namelist){
+        int eachDescendant_height = people_map_.at(eachDescendant)->height_;
+        if(shortestPerson_height > eachDescendant_height){
+            shortestPerson_height = eachDescendant_height;
+        }
+    }
+    //find the shortest person
+    string shortestPerson_name = thisPerson_name;
+    for(auto& eachDescendant:namelist){
+        int eachDescendant_height = people_map_.at(eachDescendant)->height_;
+        if(eachDescendant_height == shortestPerson_height){
+            shortestPerson_name = eachDescendant;
+        }
+    }
+    if(shortestPerson_name == thisPerson_name){
+        output << "With the height of " << shortestPerson_height << ", "
+                << thisPerson_name
+                << " is the tallest person in his/her lineage." << endl;
+    }
+    else{
+        output << "With the height of " << shortestPerson_height << ", "
+                << shortestPerson_name
+                << " is the tallest person in "
+                << thisPerson_name << "'s lineage." << endl;
+    }
 }
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
@@ -215,6 +286,19 @@ void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 
 }
 
+Person *Familytree::getPointer(const std::string &id) const
+{
+    if(people_map_.find(id) == people_map_.end()){
+        return nullptr;
+    }
+    return people_map_.at(id).get();
+}
+
+void Familytree::printNotFound(const std::string &id, std::ostream &output) const
+{
+    output << "Error. " << id << " not found." << endl;
+}
+
 IdSet Familytree::vectorToIdSet(const std::vector<Person *> &container) const
 {
     IdSet idList = {};
@@ -224,4 +308,18 @@ IdSet Familytree::vectorToIdSet(const std::vector<Person *> &container) const
         }
     }
     return idList;
+}
+
+void Familytree::collectDescendants(const string &id, IdSet &descendantsList) const
+{
+    Person* eachPerson = getPointer(id);
+    if(!eachPerson){
+        return;
+    }
+    for(auto& child:eachPerson->children_){
+        if(child){
+            descendantsList.insert(child->id_);
+            collectDescendants(child->id_, descendantsList);
+        }
+    }
 }

@@ -41,6 +41,7 @@ struct Person
 };
 
 using IdSet = std::set<std::string>;
+using PeopleMap = std::map<std::string, std::shared_ptr<Person>>;
 
 /**
  * @brief The Familytree class
@@ -185,8 +186,12 @@ private:
      */
     void printGroup(const std::string& id, const std::string& group,
                     const IdSet& container, std::ostream& output) const;
-    //below are member data i set
-    std::map<std::string, std::shared_ptr<Person>> people_map_;
+
+    //below are member data/functions i set
+
+    void collectDescendants(const std::string& id, IdSet& descendantsList) const;
+
+    PeopleMap people_map_;
 };
 
 #endif // FAMILYTREE_HH
