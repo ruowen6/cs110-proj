@@ -15,7 +15,7 @@ void Familytree::addNewPerson(const string &id, int height, ostream &output)
 {
     //if not first add
     if(people_map_.find(id) != people_map_.end()){
-        output << "Error. Person already added." << endl;
+        output << ALREADY_ADDED << endl;
         return;
     }
     shared_ptr<Person> thisPerson
@@ -68,23 +68,18 @@ void Familytree::printPersons(Params, ostream &output) const
 
 void Familytree::printChildren(Params params, std::ostream &output) const
 {
+    string groupName = "children";
     string thisPerson_name = "";
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
 
-    auto childrenVector = thisPerson->children_;
-    IdSet namelist = vectorToIdSet(childrenVector);
+    IdSet namelist = {};
 
-    if(namelist.empty()){
-        output << thisPerson_name << " has no children." << endl;
-        return;
-    }
-    output << thisPerson_name << " has " << namelist.size() << " children:" << endl;
-    for(auto& childName:namelist){
-        output << childName << endl;
-    }
+    collectDescendants_with_depth(thisPerson_name, namelist);
+
+    printGroup(thisPerson_name, groupName, namelist, output);
 }
 
 void Familytree::printParents(Params params, ostream &output) const
@@ -271,11 +266,25 @@ void Familytree::printShortestInLineage(Params params, std::ostream &output) con
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 {
+    string groupName = "grandchildren";
     string thisPerson_name = "";
     Person* thisPerson = nullptr;
     if(is_personNotFound(thisPerson_name, thisPerson, params, output)){
         return;
     }
+
+    IdSet namelist = {};
+    int depth = stoi(params.at(1)) + 1;
+
+    collectDescendants_with_depth(thisPerson_name, namelist, depth);
+
+    if(!(depth - 1)){
+        output << WRONG_LEVEL << endl;
+        return;
+    }
+
+    printGroup(thisPerson_name, groupName, namelist, output, depth - 1);
+
 }
 
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
@@ -311,6 +320,35 @@ IdSet Familytree::vectorToIdSet(const std::vector<Person *> &container) const
     return idList;
 }
 
+void Familytree::printGroup(const std::string &id, const std::string &group,
+                            const IdSet &container, std::ostream &output,
+                            const int depth) const
+{
+    if(container.empty()){
+        output << id << " has no ";
+        if(depth - 1){
+            for(int i = depth - 1; i > 0; i--){
+                output << "great-";
+            }
+        }
+        output << group << "." << endl;
+        return;
+    }
+    output << id << " has " << container.size() << " " ;
+    if(depth - 1){
+        for(int i = depth - 1; i > 0; i--){
+            output << "great-";
+        }
+    }
+    output << group << ":" << endl;
+
+    for(auto& memberName:container){
+        output << memberName << endl;
+    }
+}
+
+//below are funcs i set myself
+
 void Familytree::collectDescendants(const string &id, IdSet &descendantsList) const
 {
     Person* eachPerson = getPointer(id);
@@ -321,6 +359,32 @@ void Familytree::collectDescendants(const string &id, IdSet &descendantsList) co
         if(child){
             descendantsList.insert(child->id_);
             collectDescendants(child->id_, descendantsList);
+        }
+    }
+}
+
+void Familytree::collectDescendants_with_depth(const std::string &id,
+                                               IdSet &descendantsList,
+                                               int maxDepth,
+                                               int currentDepth) const
+{
+    if(currentDepth > maxDepth){
+        return;
+    }
+    Person* eachPerson = getPointer(id);
+    if(!eachPerson){
+        return;
+    }
+    for(auto& child:eachPerson->children_){
+        if(child){
+            if(currentDepth == maxDepth){
+                descendantsList.insert(child->id_);
+            }
+            else{
+                collectDescendants_with_depth(child->id_,
+                                              descendantsList,
+                                              maxDepth, currentDepth + 1);
+            }
         }
     }
 }
