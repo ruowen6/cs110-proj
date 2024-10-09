@@ -43,7 +43,12 @@ void Familytree::addRelation(const string &child,
         if(thisPerson.first == child){
             child_to_add = thisPerson.second;
             child_to_add->parents_ = {parent_1, parent_2};
+            break;
         }
+    }
+    //if when adding relation, the child does not exist...
+    if(!child_to_add){
+        printNotFound(child, output);
     }
     //find the parent of that person and add children relation
     for(auto parent:{parent_1, parent_2}){
@@ -54,9 +59,6 @@ void Familytree::addRelation(const string &child,
 
     //test
     //testTEST(output, "addRelation");
-    if(0){
-        output << "ERROR";
-    }
 }
 
 void Familytree::printPersons(Params, ostream &output) const
@@ -154,7 +156,7 @@ void Familytree::printCousins(Params params, std::ostream &output) const
         namelist_siblings_of_parents.erase(parentName);
     }
 
-    //find the children of the siblings of parent
+    //find the children of the siblings of parent ==> cousins
     for(auto& cousins_Name:namelist_siblings_of_parents){
         collectDescendants_with_depth(cousins_Name, namelist);
     }
