@@ -191,18 +191,18 @@ private:
     //below are member data/functions i set
     void collectDescendants(const std::string& id, IdSet& descendantsList) const;
 
-    void collectDescendants_with_depth(const std::string& id,
+    void collectDescendantsWithDepth(const std::string& id,
                                        IdSet& descendantsList,
                                        int maxDepth = 1, int currentDepth = 1) const;
 
-    void collectAncestors_with_depth(const std::string& id,
+    void collectAncestorsWithDepth(const std::string& id,
                                        IdSet& ancestorsList,
                                        int maxDepth = 1, int currentDepth = 1) const;
 
-    bool is_personNotFound (std::string& thisPerson_name, Person*& thisPerson,
+    bool isPersonNotFound (std::string& thisPerson_name, Person*& thisPerson,
                             Params params, std::ostream& output) const;
 
-    PeopleMap people_map_;
+    PeopleMap peopleMap_;
 
     //only for test
     void testTEST(std::ostream& output, std::string type);
