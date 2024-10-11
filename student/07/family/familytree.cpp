@@ -21,50 +21,31 @@ void Familytree::addNewPerson(const string &id, int height, ostream &output)
     shared_ptr<Person> thisPerson
             = make_shared<Person>(Person{id, height, {nullptr, nullptr}, {}});
     peopleMap_.insert({{id, thisPerson}});
-
-    //test
     //testTEST(output, "addNewPerson");
 }
 
 void Familytree::addRelation(const string &child,
                              const vector<string> &parents, ostream &output)
-{//what to do in this function with the output stream??
-    Person* parentA = nullptr;
-    Person* parentB = nullptr;
-    //if the parents added as members of this familytree
-    if(peopleMap_.find(parents[0]) != peopleMap_.end()){
-            parentA = peopleMap_.at(parents[0]).get();
-    }
-    if(peopleMap_.find(parents[1]) != peopleMap_.end()){
-            parentB = peopleMap_.at(parents[1]).get();
-    }
-    //find the person and add the parents relation
-    shared_ptr<Person> childToAdd = nullptr;
-    for(auto& thisPerson:peopleMap_){
-        if(thisPerson.first == child){
-            childToAdd = thisPerson.second;
-            childToAdd->parents_ = {parentA, parentB};
-            /* we add relation for one person each round,
-             * so once the child is found, we don't need to go through
-             * the items remained in this for loop */
-            break;
-        }
-    }
-    /* after adding relation this round, if child_to_add is nullptr
-     * it means the child does not exist...
-     * thus some error happens to the datafile */
+{
+    //try to find parents' pointers with parents' id
+    Person* parentA = getPointer(parents[0]);
+    Person* parentB = getPointer(parents[1]);
+    //check if the person exists
+    Person* childToAdd = getPointer(child);
     if(!childToAdd){
         printNotFound(child, output);
         return;
     }
+    //find the person and add the parents relation to the person
+    if(peopleMap_.find(child) != peopleMap_.end()){
+        childToAdd->parents_ = {parentA, parentB};
+    }
     //find the parent of that person and add children relation
     for(auto& parent:{parentA, parentB}){
         if(parent){
-            getPointer(parent->id_)->children_.push_back(childToAdd.get());
+            getPointer(parent->id_)->children_.push_back(childToAdd);
         }
     }
-
-    //test
     //testTEST(output, "addRelation");
 }
 
