@@ -180,28 +180,15 @@ void Familytree::printTallestInLineage(Params params, ostream &output) const
         return;
     }
 
-    IdSet namelist;
-    collectDescendants(thisPerson_name, namelist);
-    int thisPerson_height = getPointer(thisPerson_name)->height_;
-    int tallestPerson_height = thisPerson_height;
-    //find the tallest height
-    for(auto& eachDescendant:namelist){
-        int eachDescendant_height = getPointer(eachDescendant)->height_;
-        if(tallestPerson_height < eachDescendant_height){
-            tallestPerson_height = eachDescendant_height;
-        }
-    }
-    //find the tallest person
-    string tallestPerson_name = thisPerson_name;
-    for(auto& eachDescendant:namelist){
-        int eachDescendant_height = getPointer(eachDescendant)->height_;
-        if(eachDescendant_height == tallestPerson_height){
-            tallestPerson_name = eachDescendant;
-        }
-    }
+    bool isForShortest = false;
+    string resultName = "";
+    int resultHeight = NO_HEIGHT;
 
-    heightPrint(thisPerson_name, tallestPerson_name, tallestPerson_height,
-                false, output);
+    collectHeightResult(thisPerson_name, resultName, resultHeight,
+                        isForShortest);
+
+    printHeight(thisPerson_name, resultName, resultHeight,
+                isForShortest, output);
 }
 
 void Familytree::printShortestInLineage(Params params, ostream &output) const
@@ -212,28 +199,15 @@ void Familytree::printShortestInLineage(Params params, ostream &output) const
         return;
     }
 
-    IdSet namelist;
-    collectDescendants(thisPerson_name, namelist);
-    int thisPerson_height = peopleMap_.at(thisPerson_name)->height_;
-    int shortestPerson_height = thisPerson_height;
-    //find the shortest height
-    for(auto& eachDescendant:namelist){
-        int eachDescendant_height = peopleMap_.at(eachDescendant)->height_;
-        if(shortestPerson_height > eachDescendant_height){
-            shortestPerson_height = eachDescendant_height;
-        }
-    }
-    //find the shortest person
-    string shortestPerson_name = thisPerson_name;
-    for(auto& eachDescendant:namelist){
-        int eachDescendant_height = peopleMap_.at(eachDescendant)->height_;
-        if(eachDescendant_height == shortestPerson_height){
-            shortestPerson_name = eachDescendant;
-        }
-    }
+    bool isForShortest = true;
+    string resultName = "";
+    int resultHeight = NO_HEIGHT;
 
-    heightPrint(thisPerson_name, shortestPerson_name, shortestPerson_height,
-                false, output);
+    collectHeightResult(thisPerson_name, resultName, resultHeight,
+                        isForShortest);
+
+    printHeight(thisPerson_name, resultName, resultHeight,
+                isForShortest, output);
 }
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
@@ -419,12 +393,17 @@ bool Familytree::isPersonNotFound(string& thisPerson_name, Person *&thisPerson,
     return false;
 }
 
-void Familytree::heightPrint(const std::string& thisPerson_name,
+void Familytree::printHeight(const std::string& thisPerson_name,
                              const std::string& resultName, int resultHeight,
-                             bool isShortest, std::ostream& output) const
+                             bool isForShortest, std::ostream& output) const
 {
+    if(resultHeight == NO_HEIGHT){
+        output << "ERROR in height, check function: collectHeightResult";
+        return;
+    }
+
     string forFunction = "highest";
-    if(isShortest){
+    if(isForShortest){
         forFunction = "shortest";
     }
     if(resultName == thisPerson_name){
@@ -439,6 +418,39 @@ void Familytree::heightPrint(const std::string& thisPerson_name,
                 << " is the " << forFunction
                 << " person in "
                 << thisPerson_name << "'s lineage." << endl;
+    }
+}
+
+void Familytree::collectHeightResult(const std::string &thisPerson_name,
+                                     std::string &resultName,
+                                     int &resultHeight,
+                                     bool isForShortest) const
+{
+    IdSet namelist;
+    collectDescendants(thisPerson_name, namelist);
+    //initialize the result by the person's height
+    resultHeight = getPointer(thisPerson_name)->height_;
+    //find the target height
+    for(auto& eachDescendant:namelist){
+        int eachDescendant_height = getPointer(eachDescendant)->height_;
+        if(isForShortest){
+            if(resultHeight > eachDescendant_height){
+                resultHeight = eachDescendant_height;
+            }
+        }
+        else{
+            if(resultHeight < eachDescendant_height){
+                resultHeight = eachDescendant_height;
+            }
+        }
+    }
+    //find the target person
+    resultName = thisPerson_name;
+    for(auto& eachDescendant:namelist){
+        int eachDescendant_height = getPointer(eachDescendant)->height_;
+        if(eachDescendant_height == resultHeight){
+            resultName = eachDescendant;
+        }
     }
 }
 

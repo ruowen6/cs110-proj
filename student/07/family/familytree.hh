@@ -202,9 +202,13 @@ private:
     bool isPersonNotFound (std::string& thisPerson_name, Person*& thisPerson,
                             Params params, std::ostream& output) const;
 
-    void heightPrint(const std::string& thisPerson_name,
+    void printHeight(const std::string& thisPerson_name,
                      const std::string& resultName, int resultHeight,
-                     bool isShortest, std::ostream& output) const;
+                     bool isForShortest, std::ostream& output) const;
+
+    void collectHeightResult(const std::string& thisPerson_name,
+                             std::string& resultName,
+                             int& resultHeight, bool isForShortest) const;
 
     PeopleMap peopleMap_;
 
