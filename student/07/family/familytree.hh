@@ -202,9 +202,9 @@ private:
     bool isPersonNotFound (std::string& thisPerson_name, Person*& thisPerson,
                             Params params, std::ostream& output) const;
 
-    void printHeight(const std::string& thisPerson_name,
-                     const std::string& resultName, int resultHeight,
-                     bool isForShortest, std::ostream& output) const;
+    void printHeightResult(const std::string& thisPerson_name,
+                           const std::string& resultName, int resultHeight,
+                           bool isForShortest, std::ostream& output) const;
 
     void collectHeightResult(const std::string& thisPerson_name,
                              std::string& resultName,

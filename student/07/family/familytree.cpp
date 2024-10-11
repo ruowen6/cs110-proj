@@ -168,7 +168,7 @@ void Familytree::printTallestInLineage(Params params, ostream &output) const
     collectHeightResult(thisPerson_name, resultName, resultHeight,
                         isForShortest);
 
-    printHeight(thisPerson_name, resultName, resultHeight,
+    printHeightResult(thisPerson_name, resultName, resultHeight,
                 isForShortest, output);
 }
 
@@ -187,7 +187,7 @@ void Familytree::printShortestInLineage(Params params, ostream &output) const
     collectHeightResult(thisPerson_name, resultName, resultHeight,
                         isForShortest);
 
-    printHeight(thisPerson_name, resultName, resultHeight,
+    printHeightResult(thisPerson_name, resultName, resultHeight,
                 isForShortest, output);
 }
 
@@ -374,16 +374,17 @@ bool Familytree::isPersonNotFound(string& thisPerson_name, Person *&thisPerson,
     return false;
 }
 
-void Familytree::printHeight(const std::string& thisPerson_name,
-                             const std::string& resultName, int resultHeight,
-                             bool isForShortest, std::ostream& output) const
+void Familytree::printHeightResult(const std::string& thisPerson_name,
+                                   const std::string& resultName,
+                                   int resultHeight, bool isForShortest,
+                                   std::ostream& output) const
 {
     if(resultHeight == NO_HEIGHT){
         output << "ERROR in height, check function: collectHeightResult";
         return;
     }
 
-    string forFunction = "highest";
+    string forFunction = "tallest";
     if(isForShortest){
         forFunction = "shortest";
     }
