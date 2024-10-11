@@ -173,7 +173,7 @@ private:
      * @return set of ids of those persons included in the given container
      * vector.
      */
-    IdSet vectorToIdSet(const std::vector<Person*> &container) const;
+    IdSet vectorToIdSet(const std::vector<Person*>& container) const;
 
     /**
      * @brief printGroup
@@ -187,7 +187,15 @@ private:
                     const IdSet& container, std::ostream& output,
                     const int depth = 0) const;
 
-    //======== below are private variable/functions I add ========
+    //======== below are my addition private functions/variable ========
+
+    /* the structure and the logic is basically like this:
+     * map<id, a smart ptr points to a Person type data>
+     *     ==ptr=>Person{id,
+     *                   height,
+     *                   (vector){ptr to parentA, ptr to parentB},
+     *                   (vector){ptr to children...}}*/
+    std::map<std::string, std::shared_ptr<Person>> peopleMap_;
 
     /**
      * @brief collectDescendants
@@ -213,7 +221,7 @@ private:
      * and put into the memberList
      */
     void collectRelationsWithDepth(const std::string& id,
-                                   IdSet& memberList, bool direction,
+                                   IdSet& memberList, std::string direction,
                                    int maxDepth = 0,
                                    int currentDepth = 0) const;
 
@@ -243,8 +251,6 @@ private:
     void collectHeightResult(const std::string& thisPersonName,
                              std::string& resultName,
                              int& resultHeight, bool isForShortest) const;
-
-    std::map<std::string, std::shared_ptr<Person>> peopleMap_;
 
     //for personal test ONLY
     /**

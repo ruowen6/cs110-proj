@@ -4,15 +4,12 @@
 #include <set>
 #include <string>
 
-const bool PARENT_DIRECTION = true;
-const bool CHILD_DIRECTION = false;
-
 Familytree::Familytree()
 {
 }
 
-void Familytree::addNewPerson(const std::string &id, int height,
-                              std::ostream &output)
+void Familytree::addNewPerson(const std::string& id, int height,
+                              std::ostream& output)
 {
     /* if not the first time add
      * the getPointer function will return a valid pointer */
@@ -27,8 +24,8 @@ void Familytree::addNewPerson(const std::string &id, int height,
     //testTEST(output, "addNewPerson");
 }
 
-void Familytree::addRelation(const std::string &child,
-                             const std::vector<std::string> &parents,
+void Familytree::addRelation(const std::string& child,
+                             const std::vector<std::string>& parents,
                              std::ostream& output)
 {
     /* try to find parents' pointers with parents' id,
@@ -55,7 +52,7 @@ void Familytree::addRelation(const std::string &child,
     //testTEST(output, "addRelation");
 }
 
-void Familytree::printPersons(Params, std::ostream &output) const
+void Familytree::printPersons(Params, std::ostream& output) const
 {
     for(auto& person:peopleMap_){
         //print:        id,            height in the Person struct
@@ -63,7 +60,7 @@ void Familytree::printPersons(Params, std::ostream &output) const
     }
 }
 
-void Familytree::printChildren(Params params, std::ostream &output) const
+void Familytree::printChildren(Params params, std::ostream& output) const
 {
     /* set the group name to help systematic message print
      * and more readable */
@@ -80,12 +77,12 @@ void Familytree::printChildren(Params params, std::ostream &output) const
     //container to put the output name list
     IdSet namelist = {};
     //collect the children data
-    collectRelationsWithDepth(thisPersonName, namelist, CHILD_DIRECTION);
+    collectRelationsWithDepth(thisPersonName, namelist, "CHILD_DIRECTION");
     //print the name list
     printGroup(thisPersonName, groupName, namelist, output);
 }
 
-void Familytree::printParents(Params params, std::ostream &output) const
+void Familytree::printParents(Params params, std::ostream& output) const
 {
     /* set the group name to help systematic message print
      * and more readable */
@@ -102,12 +99,12 @@ void Familytree::printParents(Params params, std::ostream &output) const
     //container to put the output name list
     IdSet namelist = {};
     //collect the parent data
-    collectRelationsWithDepth(thisPersonName, namelist, PARENT_DIRECTION);
+    collectRelationsWithDepth(thisPersonName, namelist, "PARENT_DIRECTION");
     //print the name list
     printGroup(thisPersonName, groupName, namelist, output);
 }
 
-void Familytree::printSiblings(Params params, std::ostream &output) const
+void Familytree::printSiblings(Params params, std::ostream& output) const
 {
     /* set the group name to help systematic message print
      * and more readable */
@@ -127,12 +124,12 @@ void Familytree::printSiblings(Params params, std::ostream &output) const
     IdSet namelistParent = {};
 
     //find the parents
-    collectRelationsWithDepth(thisPersonName, namelistParent, PARENT_DIRECTION);
+    collectRelationsWithDepth(thisPersonName, namelistParent, "PARENT_DIRECTION");
 
 
     //find the children of this person's parents
     for(auto& parentName:namelistParent){
-        collectRelationsWithDepth(parentName, namelist, CHILD_DIRECTION);
+        collectRelationsWithDepth(parentName, namelist, "CHILD_DIRECTION");
     }
     /* siblings are the children from this person's parent
      * but except this person her/himself */
@@ -143,7 +140,7 @@ void Familytree::printSiblings(Params params, std::ostream &output) const
 
 /* Main logic in this function:
  * the cousins are the children of parents' siblings */
-void Familytree::printCousins(Params params, std::ostream &output) const
+void Familytree::printCousins(Params params, std::ostream& output) const
 {
     /* set the group name to help systematic message print
      * and more readable */
@@ -168,16 +165,16 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 
     //find the parents
     collectRelationsWithDepth(thisPersonName, namelistParents,
-                              PARENT_DIRECTION);
+                              "PARENT_DIRECTION");
 
     //find the grandparents
     collectRelationsWithDepth(thisPersonName, namelistGrandparents,
-                              PARENT_DIRECTION, 2);
+                              "PARENT_DIRECTION", 2);
 
     //find the siblings of the person's parents ==> aunts and uncles
     for(auto& auntUncleName:namelistGrandparents){
         collectRelationsWithDepth
-                (auntUncleName, namelistAuntUncle, CHILD_DIRECTION);
+                (auntUncleName, namelistAuntUncle, "CHILD_DIRECTION");
     }
     /* parents' siblings are the children from grandparents
      * but except parents themselves */
@@ -187,14 +184,14 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 
     //find the children of aunts and uncles ==> cousins
     for(auto& cousinsName:namelistAuntUncle){
-        collectRelationsWithDepth(cousinsName, namelist, CHILD_DIRECTION);
+        collectRelationsWithDepth(cousinsName, namelist, "CHILD_DIRECTION");
     }
     //print the name list
     printGroup(thisPersonName, groupName, namelist, output);
 }
 
 void Familytree::printTallestInLineage(Params params,
-                                       std::ostream &output) const
+                                       std::ostream& output) const
 {
     //get the person's name from user's input
     std::string thisPersonName = params.at(0);
@@ -220,7 +217,7 @@ void Familytree::printTallestInLineage(Params params,
 }
 
 void Familytree::printShortestInLineage(Params params,
-                                        std::ostream &output) const
+                                        std::ostream& output) const
 {
     //get the person's name from user's input
     std::string thisPersonName = params.at(0);
@@ -245,7 +242,7 @@ void Familytree::printShortestInLineage(Params params,
                       isForShortest, output);
 }
 
-void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
+void Familytree::printGrandChildrenN(Params params, std::ostream& output) const
 {
     /* set the group name to help systematic message print
      * and more readable */
@@ -270,12 +267,17 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
     }
     //collect the data of all the members with certain depth
     collectRelationsWithDepth(thisPersonName, namelist,
-                              CHILD_DIRECTION, depth);
+                              "CHILD_DIRECTION", depth);
     //print the data
-    printGroup(thisPersonName, groupName, namelist, output, depth - 1);
+    /* using depth - 1 is because:
+     * depth = 1 is for grandchildren, but it is still the
+     * similar group to other group like children
+     * so using depth - 1 = 0 when printing the result
+     * will not trigger the "great-" string */
+    printGroup(thisPersonName, groupName, namelist, output, depth);
 }
 
-void Familytree::printGrandParentsN(Params params, std::ostream &output) const
+void Familytree::printGrandParentsN(Params params, std::ostream& output) const
 {
     /* set the group name to help systematic message print
      * and more readable */
@@ -300,30 +302,40 @@ void Familytree::printGrandParentsN(Params params, std::ostream &output) const
     }
     //collect the data of all the members with certain depth
     collectRelationsWithDepth(thisPersonName, namelist,
-                              PARENT_DIRECTION, depth);
+                              "PARENT_DIRECTION", depth);
     //print the data
-    printGroup(thisPersonName, groupName, namelist, output, depth - 1);
+    /* using depth - 1 is because:
+     * depth = 1 is for grandchildren, but it is still the
+     * similar group to other group like children
+     * so using depth - 1 = 0 when printing the result
+     * will not trigger the "great-" string */
+    printGroup(thisPersonName, groupName, namelist, output, depth);
 }
 
 //======== below are private functions ========
 
-Person *Familytree::getPointer(const std::string &id) const
+Person *Familytree::getPointer(const std::string& id) const
 {
+    //if person not found
     if(peopleMap_.find(id) == peopleMap_.end()){
         return nullptr;
     }
+    //else return the Person pointer of this person
     return peopleMap_.at(id).get();
 }
 
-void Familytree::printNotFound(const std::string &id,
-                               std::ostream &output) const
+void Familytree::printNotFound(const std::string& id,
+                               std::ostream& output) const
 {
     output << "Error. " << id << " not found." << std::endl;
 }
 
-IdSet Familytree::vectorToIdSet(const std::vector<Person *> &container) const
+IdSet Familytree::vectorToIdSet(const std::vector<Person*>& container) const
 {
     IdSet idList = {};
+    /* with the given container contains members' pointers,
+     * if the pointer is valid (not nullptr),
+     * then the id(string) of this person can be added to the idSet*/
     for(auto person:container){
         if(person){
             idList.insert(person->id_);
@@ -332,88 +344,97 @@ IdSet Familytree::vectorToIdSet(const std::vector<Person *> &container) const
     return idList;
 }
 
-void Familytree::printGroup(const std::string &id, const std::string &group,
-                            const IdSet &container, std::ostream &output,
+void Familytree::printGroup(const std::string& id, const std::string& group,
+                            const IdSet& container, std::ostream& output,
                             const int depth) const
 {
+    //no id in the container ==> no result in previous searching
     if(container.empty()){
         output << id << " has no ";
-        if(depth - 1){
-            for(int i = depth; i > 0; i--){
-                output << "great-";
-            }
+        /* when depth = 1, it is searching grandchildren/grandparents,
+         * still no need to use any "great-" string.
+         * So this branch should start from depth = 2
+         * and print one "great-" */
+        for(int i = 0; i < depth - 1; i++){
+            output << "great-";
         }
         output << group << "." << std::endl;
         return;
     }
+    /* when there is at least one id:
+     * the size of the container is the amount of target members */
     output << id << " has " << container.size() << " " ;
-    if(depth - 1){
-        for(int i = depth; i > 0; i--){
-            output << "great-";
-        }
+    /* when depth = 1, it is searching grandchildren/grandparents,
+     * still no need to use any "great-" string.
+     * So this branch should start from depth = 2
+     * and print one "great-" */
+    for(int i = 0; i < depth - 1; i++){
+        output << "great-";
     }
     output << group << ":" << std::endl;
-
+    //print every member's name
     for(auto& memberName:container){
         output << memberName << std::endl;
     }
 }
 
-//======== below are private functions I add ========
+//======== below are my addition private functions ========
 
-void Familytree::collectDescendants(const std::string &id,
-                                    IdSet &descendantsList) const
+void Familytree::collectDescendants(const std::string& id,
+                                    IdSet& descendantsList) const
 {
+    //get the pointer with the name of the person in current round
     Person* eachPerson = getPointer(id);
+    //when it is nullptr ==> last round is the end of the branch of tree
     if(!eachPerson){
         return;
     }
+    //in the children group of current person
     for(auto& child:eachPerson->children_){
+        //if the element inside the children group is valid
         if(child){
+            //then the element is one of the descendant
             descendantsList.insert(child->id_);
+            //recurssively find the children of each child and so on...
             collectDescendants(child->id_, descendantsList);
         }
     }
 }
 
-void Familytree::collectRelationsWithDepth(const std::string &id,
-                                             IdSet &membersList,
-                                             bool direction,
+void Familytree::collectRelationsWithDepth(const std::string& id,
+                                             IdSet& membersList,
+                                             std::string direction,
                                              int maxDepth,
                                              int currentDepth) const
 {
+    //if the search exceeds the depth, then stop
     if(currentDepth > maxDepth){
         return;
     }
+    //get the pointer with the name of the person in current round
     Person* eachPerson = getPointer(id);
+    //when it is nullptr ==> last round is the end of the branch of tree
     if(!eachPerson){
         return;
     }
-    if(direction == PARENT_DIRECTION){
-        for(auto& parent:eachPerson->parents_){
-            if(parent){
-                if(currentDepth == maxDepth){
-                    membersList.insert(parent->id_);
-                }
-                else{
-                    collectRelationsWithDepth(parent->id_, membersList,
-                                              PARENT_DIRECTION,
-                                              maxDepth, currentDepth + 1);
-                }
-            }
-        }
+
+    std::vector<Person*> membersToSearch;
+    if(direction == "PARENT_DIRECTION"){
+        membersToSearch = eachPerson->parents_;
     }
     else{
-        for(auto& child:eachPerson->children_){
-            if(child){
-                if(currentDepth == maxDepth){
-                    membersList.insert(child->id_);
-                    }
-                else{
-                    collectRelationsWithDepth(child->id_, membersList,
-                                              CHILD_DIRECTION,
-                                              maxDepth, currentDepth + 1);
-                }
+        membersToSearch = eachPerson->children_;
+    }
+
+    for(auto& member:membersToSearch){
+        if(member){
+            if(currentDepth == maxDepth){
+                membersList.insert(member->id_);
+            }
+            else{
+                collectRelationsWithDepth(member->id_, membersList,
+                                          direction,
+                                          maxDepth, currentDepth + 1);
             }
         }
     }
@@ -448,9 +469,9 @@ void Familytree::printHeightResult(const std::string& thisPerson_name,
     }
 }
 
-void Familytree::collectHeightResult(const std::string &thisPerson_name,
-                                     std::string &resultName,
-                                     int &resultHeight,
+void Familytree::collectHeightResult(const std::string& thisPerson_name,
+                                     std::string& resultName,
+                                     int& resultHeight,
                                      bool isForShortest) const
 {
     IdSet namelist;
@@ -481,8 +502,10 @@ void Familytree::collectHeightResult(const std::string &thisPerson_name,
     }
 }
 
-void Familytree::testTEST(std::ostream &output, std::string location)
+//for personal test ONLY
+void Familytree::testTEST(std::ostream& output, std::string location)
 {
+    //count the line order of datafile
     static int counter = 1;
     output << "No." << counter << " " << location << " info added." << std::endl;
     counter++;
