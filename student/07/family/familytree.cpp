@@ -196,66 +196,81 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 void Familytree::printTallestInLineage(Params params,
                                        std::ostream &output) const
 {
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
-    if(!thisPerson){//thisPersonName
-        printNotFound(thisPerson_name, output);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
+    if(!thisPerson){
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //not for finding the shortest ==> for tallest
     bool isForShortest = false;
+    //initialize the tallest person's name
     std::string resultName = "";
+    //initialize the height of the tallest person
     int resultHeight = NO_HEIGHT;
-
-    collectHeightResult(thisPerson_name, resultName, resultHeight,
+    //collect the data of height and name for the tallest person
+    collectHeightResult(thisPersonName, resultName, resultHeight,
                         isForShortest);
-
-    printHeightResult(thisPerson_name, resultName, resultHeight,
+    //print the data
+    printHeightResult(thisPersonName, resultName, resultHeight,
                       isForShortest, output);
 }
 
 void Familytree::printShortestInLineage(Params params,
                                         std::ostream &output) const
 {
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
 
     bool isForShortest = true;
+    //initialize the shortest person's name
     std::string resultName = "";
+    //initialize the height of the shortest person
     int resultHeight = NO_HEIGHT;
-
-    collectHeightResult(thisPerson_name, resultName, resultHeight,
+    //collect the data of height and name for the shortest person
+    collectHeightResult(thisPersonName, resultName, resultHeight,
                         isForShortest);
-
-    printHeightResult(thisPerson_name, resultName, resultHeight,
+    //print the data
+    printHeightResult(thisPersonName, resultName, resultHeight,
                       isForShortest, output);
 }
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 {
+    /* set the group name to help systematic message print
+     * and more readable */
     std::string groupName = "grandchildren";
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //container to put the output name list
     IdSet namelist = {};
     int depth = stoi(params.at(1)) + 1;
 
-    collectRelationsWithDepth(thisPerson_name, namelist, CHILD_DIRECTION, depth);
+    collectRelationsWithDepth(thisPersonName, namelist, CHILD_DIRECTION, depth);
 
     if(!(depth - 1)){
         output << WRONG_LEVEL << std::endl;
         return;
     }
 
-    printGroup(thisPerson_name, groupName, namelist, output, depth - 1);
+    printGroup(thisPersonName, groupName, namelist, output, depth - 1);
 
 }
 
