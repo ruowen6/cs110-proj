@@ -202,6 +202,10 @@ private:
     bool isPersonNotFound (std::string& thisPerson_name, Person*& thisPerson,
                             Params params, std::ostream& output) const;
 
+    void heightPrint(const std::string& thisPerson_name,
+                     const std::string& resultName, int resultHeight,
+                     bool isShortest, std::ostream& output) const;
+
     PeopleMap peopleMap_;
 
     //only for test

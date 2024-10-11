@@ -182,11 +182,11 @@ void Familytree::printTallestInLineage(Params params, ostream &output) const
 
     IdSet namelist;
     collectDescendants(thisPerson_name, namelist);
-    int thisPerson_height = peopleMap_.at(thisPerson_name)->height_;
+    int thisPerson_height = getPointer(thisPerson_name)->height_;
     int tallestPerson_height = thisPerson_height;
     //find the tallest height
     for(auto& eachDescendant:namelist){
-        int eachDescendant_height = peopleMap_.at(eachDescendant)->height_;
+        int eachDescendant_height = getPointer(eachDescendant)->height_;
         if(tallestPerson_height < eachDescendant_height){
             tallestPerson_height = eachDescendant_height;
         }
@@ -194,22 +194,14 @@ void Familytree::printTallestInLineage(Params params, ostream &output) const
     //find the tallest person
     string tallestPerson_name = thisPerson_name;
     for(auto& eachDescendant:namelist){
-        int eachDescendant_height = peopleMap_.at(eachDescendant)->height_;
+        int eachDescendant_height = getPointer(eachDescendant)->height_;
         if(eachDescendant_height == tallestPerson_height){
             tallestPerson_name = eachDescendant;
         }
     }
-    if(tallestPerson_name == thisPerson_name){
-        output << "With the height of " << tallestPerson_height << ", "
-                << thisPerson_name
-                << " is the tallest person in his/her lineage." << endl;
-    }
-    else{
-        output << "With the height of " << tallestPerson_height << ", "
-                << tallestPerson_name
-                << " is the tallest person in "
-                << thisPerson_name << "'s lineage." << endl;
-    }
+
+    heightPrint(thisPerson_name, tallestPerson_name, tallestPerson_height,
+                false, output);
 }
 
 void Familytree::printShortestInLineage(Params params, ostream &output) const
@@ -239,17 +231,9 @@ void Familytree::printShortestInLineage(Params params, ostream &output) const
             shortestPerson_name = eachDescendant;
         }
     }
-    if(shortestPerson_name == thisPerson_name){
-        output << "With the height of " << shortestPerson_height << ", "
-                << thisPerson_name
-                << " is the shortest person in his/her lineage." << endl;
-    }
-    else{
-        output << "With the height of " << shortestPerson_height << ", "
-                << shortestPerson_name
-                << " is the shortest person in "
-                << thisPerson_name << "'s lineage." << endl;
-    }
+
+    heightPrint(thisPerson_name, shortestPerson_name, shortestPerson_height,
+                false, output);
 }
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
@@ -427,12 +411,35 @@ bool Familytree::isPersonNotFound(string& thisPerson_name, Person *&thisPerson,
     if(!thisPerson){
         printNotFound(thisPerson_name, output);
         /* if not found,
-         * the outer if statement using this function will be true
-         * which means the person not found
-         * then the branch would be quitted */
+         * the outer if condition using this function will be true,
+         * which means the person not found.
+         * Then the branch would be quitted */
         return true;
     }
     return false;
+}
+
+void Familytree::heightPrint(const std::string& thisPerson_name,
+                             const std::string& resultName, int resultHeight,
+                             bool isShortest, std::ostream& output) const
+{
+    string forFunction = "highest";
+    if(isShortest){
+        forFunction = "shortest";
+    }
+    if(resultName == thisPerson_name){
+        output << "With the height of " << resultHeight << ", "
+                << thisPerson_name
+                << " is the " << forFunction
+                << " person in his/her lineage." << endl;
+    }
+    else{
+        output << "With the height of " << resultHeight << ", "
+                << resultName
+                << " is the " << forFunction
+                << " person in "
+                << thisPerson_name << "'s lineage." << endl;
+    }
 }
 
 void Familytree::testTEST(ostream &output, string type)
