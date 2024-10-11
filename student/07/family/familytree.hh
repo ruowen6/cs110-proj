@@ -213,14 +213,13 @@ private:
      * and put into the memberList
      */
     void collectRelationsWithDepth(const std::string& id,
-                                   IdSet& memberList,
-                                   bool direction,
+                                   IdSet& memberList, bool direction,
                                    int maxDepth = 1,
                                    int currentDepth = 1) const;
 
     /**
      * @brief printHeightResult
-     * @param thisPerson_name
+     * @param thisPersonName
      * @param resultName is the id of the tallest/shortest person
      * @param resultHeight is the height of the tallest/shortest person
      * @param isForShortest is whether it is for
@@ -228,20 +227,20 @@ private:
      * @param output
      * Print the message about tallest/shortest person's id and height
      */
-    void printHeightResult(const std::string& thisPerson_name,
+    void printHeightResult(const std::string& thisPersonName,
                            const std::string& resultName, int resultHeight,
                            bool isForShortest, std::ostream& output) const;
 
     /**
      * @brief collectHeightResult
-     * @param thisPerson_name
+     * @param thisPersonName
      * @param resultName is the id of the tallest/shortest person
      * @param resultHeight is the height of the tallest/shortest person
      * @param isForShortest is whether it is for
      *        the printShortestInLineage funtion
      * Collect the data about tallest/shortest person's id and height
      */
-    void collectHeightResult(const std::string& thisPerson_name,
+    void collectHeightResult(const std::string& thisPersonName,
                              std::string& resultName,
                              int& resultHeight, bool isForShortest) const;
 

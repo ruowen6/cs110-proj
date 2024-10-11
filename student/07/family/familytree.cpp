@@ -4,8 +4,8 @@
 #include <set>
 #include <string>
 
-const bool UP_DIRECTION = true;
-const bool DOWN_DIRENCTION = false;
+const bool PARENT_DIRECTION = true;
+const bool CHILD_DIRECTION = false;
 
 Familytree::Familytree()
 {
@@ -14,7 +14,8 @@ Familytree::Familytree()
 void Familytree::addNewPerson(const std::string &id, int height,
                               std::ostream &output)
 {
-    //if not the first time add
+    /* if not the first time add
+     * the getPointer function will return a valid pointer */
     if(getPointer(id)){
         output << ALREADY_ADDED << std::endl;
         return;
@@ -30,7 +31,8 @@ void Familytree::addRelation(const std::string &child,
                              const std::vector<std::string> &parents,
                              std::ostream& output)
 {
-    //try to find parents' pointers with parents' id
+    /* try to find parents' pointers with parents' id,
+     * if can't find, the parentA/parentB would be nullptr */
     Person* parentA = getPointer(parents[0]);
     Person* parentB = getPointer(parents[1]);
 
@@ -44,7 +46,7 @@ void Familytree::addRelation(const std::string &child,
     if(peopleMap_.find(child) != peopleMap_.end()){
         childToAdd->parents_ = {parentA, parentB};
     }
-    //find the parent of that person and add children relation
+    //find the parent for that person and add children relation
     for(auto& parent:{parentA, parentB}){
         if(parent){
             getPointer(parent->id_)->children_.push_back(childToAdd);
@@ -56,26 +58,31 @@ void Familytree::addRelation(const std::string &child,
 void Familytree::printPersons(Params, std::ostream &output) const
 {
     for(auto& person:peopleMap_){
-        //print:        id                       height
+        //print:        id,            height in the Person struct
         output << person.first << ", " << person.second->height_ << std::endl;
     }
 }
 
 void Familytree::printChildren(Params params, std::ostream &output) const
 {
+    /* set the group name to help systematic message print
+     * and more readable */
     std::string groupName = "children";
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //container to put the output name list
     IdSet namelist = {};
-
-    collectRelationsWithDepth(thisPerson_name, namelist, DOWN_DIRENCTION);
-
-    printGroup(thisPerson_name, groupName, namelist, output);
+    //collect the children data
+    collectRelationsWithDepth(thisPersonName, namelist, CHILD_DIRECTION);
+    //print the name list
+    printGroup(thisPersonName, groupName, namelist, output);
 }
 
 void Familytree::printParents(Params params, std::ostream &output) const
@@ -90,7 +97,7 @@ void Familytree::printParents(Params params, std::ostream &output) const
 
     IdSet namelist = {};
 
-    collectRelationsWithDepth(thisPerson_name, namelist, UP_DIRECTION);
+    collectRelationsWithDepth(thisPerson_name, namelist, PARENT_DIRECTION);
 
     printGroup(thisPerson_name, groupName, namelist, output);
 }
@@ -109,12 +116,12 @@ void Familytree::printSiblings(Params params, std::ostream &output) const
     IdSet namelist_parent = {};
 
     //find the parents
-    collectRelationsWithDepth(thisPerson_name, namelist_parent, UP_DIRECTION);
+    collectRelationsWithDepth(thisPerson_name, namelist_parent, PARENT_DIRECTION);
 
 
     //find the children of this person's parents
     for(auto& parentName:namelist_parent){
-        collectRelationsWithDepth(parentName, namelist, DOWN_DIRENCTION);
+        collectRelationsWithDepth(parentName, namelist, CHILD_DIRECTION);
     }
     /* siblings are the children from this person's parent
      * but except this person her/himself */
@@ -140,16 +147,16 @@ void Familytree::printCousins(Params params, std::ostream &output) const
     IdSet namelist_cousins = {};
 
     //find the parents
-    collectRelationsWithDepth(thisPerson_name, namelist_parents, UP_DIRECTION);
+    collectRelationsWithDepth(thisPerson_name, namelist_parents, PARENT_DIRECTION);
 
     //find the grandparents
     collectRelationsWithDepth(thisPerson_name, namelist_grandparents,
-                              UP_DIRECTION, 2);
+                              PARENT_DIRECTION, 2);
 
     //find the siblings of the person's parents
     for(auto& cousins_Name:namelist_grandparents){
         collectRelationsWithDepth
-                (cousins_Name, namelist_cousins, DOWN_DIRENCTION);
+                (cousins_Name, namelist_cousins, CHILD_DIRECTION);
     }
     /* parents' siblings are the children from grandparents
      * but except parents themselves */
@@ -159,7 +166,7 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 
     //find the children of the siblings of parent ==> cousins
     for(auto& cousins_Name:namelist_cousins){
-        collectRelationsWithDepth(cousins_Name, namelist, DOWN_DIRENCTION);
+        collectRelationsWithDepth(cousins_Name, namelist, CHILD_DIRECTION);
     }
 
     printGroup(thisPerson_name, groupName, namelist, output);
@@ -220,7 +227,7 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
     IdSet namelist = {};
     int depth = stoi(params.at(1)) + 1;
 
-    collectRelationsWithDepth(thisPerson_name, namelist, DOWN_DIRENCTION, depth);
+    collectRelationsWithDepth(thisPerson_name, namelist, CHILD_DIRECTION, depth);
 
     if(!(depth - 1)){
         output << WRONG_LEVEL << std::endl;
@@ -244,7 +251,7 @@ void Familytree::printGrandParentsN(Params params, std::ostream &output) const
     IdSet namelist = {};
     int depth = stoi(params.at(1)) + 1;
 
-    collectRelationsWithDepth(thisPerson_name, namelist, UP_DIRECTION, depth);
+    collectRelationsWithDepth(thisPerson_name, namelist, PARENT_DIRECTION, depth);
 
     if(!(depth - 1)){
         output << WRONG_LEVEL << std::endl;
@@ -339,7 +346,7 @@ void Familytree::collectRelationsWithDepth(const std::string &id,
     if(!eachPerson){
         return;
     }
-    if(direction == UP_DIRECTION){
+    if(direction == PARENT_DIRECTION){
         for(auto& parent:eachPerson->parents_){
             if(parent){
                 if(currentDepth == maxDepth){
@@ -347,7 +354,7 @@ void Familytree::collectRelationsWithDepth(const std::string &id,
                 }
                 else{
                     collectRelationsWithDepth(parent->id_, membersList,
-                                              UP_DIRECTION,
+                                              PARENT_DIRECTION,
                                               maxDepth, currentDepth + 1);
                 }
             }
@@ -361,7 +368,7 @@ void Familytree::collectRelationsWithDepth(const std::string &id,
                     }
                 else{
                     collectRelationsWithDepth(child->id_, membersList,
-                                              DOWN_DIRENCTION,
+                                              CHILD_DIRECTION,
                                               maxDepth, currentDepth + 1);
                 }
             }
