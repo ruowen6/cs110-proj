@@ -200,32 +200,21 @@ private:
                             IdSet& descendantsList) const;
 
     /**
-     * @brief collectDescendantsWithDepth
+     * @brief collectRelationsWithDepth
      * @param id
-     * @param descendantsList collects the ids of all the descendants
-     *        of the given person at the given depth
+     * @param memberList collects the ids of all the descendants/ancestors
+     *        of the given person at the given depth,
+     *        according to the direction.
+     *        e.g. UP_DIRENCTION is for ancestors,
+     *             DOWN_DIRENCTION is for descendants
      * @param maxDepth e.g. children = 1, grandchildren = 2
      * @param currentDepth is the current depth inside the recursion
-     * Collects all the ids of descendants at a certain level
-     * and put into the descendantsList
+     * Collects all the ids of target members at a certain level
+     * and put into the memberList
      */
-    void collectDescendantsWithDepth(const std::string& id,
-                                     IdSet& descendantsList,
-                                     int maxDepth = 1,
-                                     int currentDepth = 1) const;
-
-    /**
-     * @brief collectAncestorsWithDepth
-     * @param id
-     * @param ancestorsList collects the ids of all the ancestors
-     *        of the given person at the given depth
-     * @param maxDepth e.g. parents = 1, grandparents = 2
-     * @param currentDepth is the current depth inside the recursion
-     * Collects all the ids of ancestors at a certain level
-     * and put into the ancestorsList
-     */
-    void collectAncestorsWithDepth(const std::string& id,
-                                   IdSet& ancestorsList,
+    void collectRelationsWithDepth(const std::string& id,
+                                   IdSet& memberList,
+                                   bool direction,
                                    int maxDepth = 1,
                                    int currentDepth = 1) const;
 
