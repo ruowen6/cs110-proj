@@ -169,7 +169,7 @@ void Familytree::printCousins(Params params, std::ostream& output) const
 
     //find the grandparents
     collectRelationsWithDepth(thisPersonName, namelistGrandparents,
-                              "PARENT_DIRECTION", 2);
+                              "PARENT_DIRECTION", 1);
 
     //find the siblings of the person's parents ==> aunts and uncles
     for(auto& auntUncleName:namelistGrandparents){
