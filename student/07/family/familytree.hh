@@ -187,35 +187,84 @@ private:
                     const IdSet& container, std::ostream& output,
                     const int depth = 0) const;
 
-    //below are member data/functions i set
+    //======== below are private variable/functions I add ========
+
+    /**
+     * @brief collectDescendants
+     * @param id
+     * @param descendantsList collects the ids of all the descendants
+     *        of the given person
+     * Collects all the ids of descendants and put into the descendantsList
+     */
     void collectDescendants(const std::string& id,
                             IdSet& descendantsList) const;
 
+    /**
+     * @brief collectDescendantsWithDepth
+     * @param id
+     * @param descendantsList collects the ids of all the descendants
+     *        of the given person at the given depth
+     * @param maxDepth e.g. children = 1, grandchildren = 2
+     * @param currentDepth is the current depth inside the recursion
+     * Collects all the ids of descendants at a certain level
+     * and put into the descendantsList
+     */
     void collectDescendantsWithDepth(const std::string& id,
                                      IdSet& descendantsList,
                                      int maxDepth = 1,
                                      int currentDepth = 1) const;
 
+    /**
+     * @brief collectAncestorsWithDepth
+     * @param id
+     * @param ancestorsList collects the ids of all the ancestors
+     *        of the given person at the given depth
+     * @param maxDepth e.g. parents = 1, grandparents = 2
+     * @param currentDepth is the current depth inside the recursion
+     * Collects all the ids of ancestors at a certain level
+     * and put into the ancestorsList
+     */
     void collectAncestorsWithDepth(const std::string& id,
                                    IdSet& ancestorsList,
                                    int maxDepth = 1,
                                    int currentDepth = 1) const;
 
-    bool isPersonNotFound (const std::string& thisPerson_name,
-                           Person*& thisPerson, std::ostream& output) const;
-
+    /**
+     * @brief printHeightResult
+     * @param thisPerson_name
+     * @param resultName is the id of the tallest/shortest person
+     * @param resultHeight is the height of the tallest/shortest person
+     * @param isForShortest is whether it is for
+     *        the printShortestInLineage funtion
+     * @param output
+     * Print the message about tallest/shortest person's id and height
+     */
     void printHeightResult(const std::string& thisPerson_name,
                            const std::string& resultName, int resultHeight,
                            bool isForShortest, std::ostream& output) const;
 
+    /**
+     * @brief collectHeightResult
+     * @param thisPerson_name
+     * @param resultName is the id of the tallest/shortest person
+     * @param resultHeight is the height of the tallest/shortest person
+     * @param isForShortest is whether it is for
+     *        the printShortestInLineage funtion
+     * Collect the data about tallest/shortest person's id and height
+     */
     void collectHeightResult(const std::string& thisPerson_name,
                              std::string& resultName,
                              int& resultHeight, bool isForShortest) const;
 
     std::map<std::string, std::shared_ptr<Person>> peopleMap_;
 
-    //only for test
-    void testTEST(std::ostream& output, std::string type);
+    //for personal test ONLY
+    /**
+     * @brief testTEST
+     * @param output
+     * @param type is where the error occurs
+     */
+    void testTEST(std::ostream& output, std::string location);
 };
 
 #endif // FAMILYTREE_HH
