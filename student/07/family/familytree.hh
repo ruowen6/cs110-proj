@@ -250,7 +250,7 @@ private:
     /**
      * @brief testTEST
      * @param output
-     * @param type is where the error occurs
+     * @param location is where the error occurs
      */
     void testTEST(std::ostream& output, std::string location);
 };

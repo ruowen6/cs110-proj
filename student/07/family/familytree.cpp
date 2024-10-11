@@ -87,89 +87,110 @@ void Familytree::printChildren(Params params, std::ostream &output) const
 
 void Familytree::printParents(Params params, std::ostream &output) const
 {
+    /* set the group name to help systematic message print
+     * and more readable */
     std::string groupName = "parents";
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //container to put the output name list
     IdSet namelist = {};
-
-    collectRelationsWithDepth(thisPerson_name, namelist, PARENT_DIRECTION);
-
-    printGroup(thisPerson_name, groupName, namelist, output);
+    //collect the parent data
+    collectRelationsWithDepth(thisPersonName, namelist, PARENT_DIRECTION);
+    //print the name list
+    printGroup(thisPersonName, groupName, namelist, output);
 }
 
 void Familytree::printSiblings(Params params, std::ostream &output) const
 {
+    /* set the group name to help systematic message print
+     * and more readable */
     std::string groupName = "siblings";
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //container to put the output name list
     IdSet namelist = {};
-    IdSet namelist_parent = {};
+    //helper container, to put the parents name list
+    IdSet namelistParent = {};
 
     //find the parents
-    collectRelationsWithDepth(thisPerson_name, namelist_parent, PARENT_DIRECTION);
+    collectRelationsWithDepth(thisPersonName, namelistParent, PARENT_DIRECTION);
 
 
     //find the children of this person's parents
-    for(auto& parentName:namelist_parent){
+    for(auto& parentName:namelistParent){
         collectRelationsWithDepth(parentName, namelist, CHILD_DIRECTION);
     }
     /* siblings are the children from this person's parent
      * but except this person her/himself */
-    namelist.erase(thisPerson_name);
-
-    printGroup(thisPerson_name, groupName, namelist, output);
+    namelist.erase(thisPersonName);
+    //print the name list
+    printGroup(thisPersonName, groupName, namelist, output);
 }
 
+/* Main logic in this function:
+ * the cousins are the children of parents' siblings */
 void Familytree::printCousins(Params params, std::ostream &output) const
 {
+    /* set the group name to help systematic message print
+     * and more readable */
     std::string groupName = "cousins";
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //container to put the output name list
     IdSet namelist = {};
-    //namelistParents
-    IdSet namelist_parents = {};
-    IdSet namelist_grandparents = {};
-    IdSet namelist_cousins = {};
+    //helper container, to put the name list of parents
+    IdSet namelistParents = {};
+    //helper container, to put the name list of grandparents
+    IdSet namelistGrandparents = {};
+    //helper container, to put the name list of children of grandparents
+    IdSet namelistAuntUncle = {};
 
     //find the parents
-    collectRelationsWithDepth(thisPerson_name, namelist_parents, PARENT_DIRECTION);
+    collectRelationsWithDepth(thisPersonName, namelistParents,
+                              PARENT_DIRECTION);
 
     //find the grandparents
-    collectRelationsWithDepth(thisPerson_name, namelist_grandparents,
+    collectRelationsWithDepth(thisPersonName, namelistGrandparents,
                               PARENT_DIRECTION, 2);
 
-    //find the siblings of the person's parents
-    for(auto& cousins_Name:namelist_grandparents){
+    //find the siblings of the person's parents ==> aunts and uncles
+    for(auto& auntUncleName:namelistGrandparents){
         collectRelationsWithDepth
-                (cousins_Name, namelist_cousins, CHILD_DIRECTION);
+                (auntUncleName, namelistAuntUncle, CHILD_DIRECTION);
     }
     /* parents' siblings are the children from grandparents
      * but except parents themselves */
-    for(auto& parentName:namelist_parents){
-        namelist_cousins.erase(parentName);
+    for(auto& parentName:namelistParents){
+        namelistAuntUncle.erase(parentName);
     }
 
-    //find the children of the siblings of parent ==> cousins
-    for(auto& cousins_Name:namelist_cousins){
-        collectRelationsWithDepth(cousins_Name, namelist, CHILD_DIRECTION);
+    //find the children of aunts and uncles ==> cousins
+    for(auto& cousinsName:namelistAuntUncle){
+        collectRelationsWithDepth(cousinsName, namelist, CHILD_DIRECTION);
     }
-
-    printGroup(thisPerson_name, groupName, namelist, output);
+    //print the name list
+    printGroup(thisPersonName, groupName, namelist, output);
 }
 
 void Familytree::printTallestInLineage(Params params,
