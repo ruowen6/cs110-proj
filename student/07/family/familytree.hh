@@ -207,15 +207,15 @@ private:
      *        according to the direction.
      *        e.g. UP_DIRENCTION is for ancestors,
      *             DOWN_DIRENCTION is for descendants
-     * @param maxDepth e.g. children = 1, grandchildren = 2
+     * @param maxDepth e.g. children = 0, grandchildren = 1
      * @param currentDepth is the current depth inside the recursion
      * Collects all the ids of target members at a certain level
      * and put into the memberList
      */
     void collectRelationsWithDepth(const std::string& id,
                                    IdSet& memberList, bool direction,
-                                   int maxDepth = 1,
-                                   int currentDepth = 1) const;
+                                   int maxDepth = 0,
+                                   int currentDepth = 0) const;
 
     /**
      * @brief printHeightResult

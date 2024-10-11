@@ -261,41 +261,48 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
     }
     //container to put the output name list
     IdSet namelist = {};
-    int depth = stoi(params.at(1)) + 1;
-
-    collectRelationsWithDepth(thisPersonName, namelist, CHILD_DIRECTION, depth);
-
-    if(!(depth - 1)){
+    //get the searching depth from the user's input
+    int depth = stoi(params.at(1));
+    //level should always be no less than 1 (children is 0)
+    if(depth < 1){
         output << WRONG_LEVEL << std::endl;
         return;
     }
-
+    //collect the data of all the members with certain depth
+    collectRelationsWithDepth(thisPersonName, namelist,
+                              CHILD_DIRECTION, depth);
+    //print the data
     printGroup(thisPersonName, groupName, namelist, output, depth - 1);
-
 }
 
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 {
+    /* set the group name to help systematic message print
+     * and more readable */
     std::string groupName = "grandparents";
-    std::string thisPerson_name = params.at(0);
-    Person* thisPerson = getPointer(thisPerson_name);
+    //get the person's name from user's input
+    std::string thisPersonName = params.at(0);
+    //search the person in the dataset by name
+    Person* thisPerson = getPointer(thisPersonName);
+    //if not found (getPointer return nullptr)
     if(!thisPerson){
-        printNotFound(thisPerson_name, output);
+        printNotFound(thisPersonName, output);
         return;
     }
-
+    //container to put the output name list
     IdSet namelist = {};
-    int depth = stoi(params.at(1)) + 1;
-
-    collectRelationsWithDepth(thisPerson_name, namelist, PARENT_DIRECTION, depth);
-
-    if(!(depth - 1)){
+    //get the searching depth from the user's input
+    int depth = stoi(params.at(1));
+    //level should always be no less than 1 (parent is 0)
+    if(depth < 1){
         output << WRONG_LEVEL << std::endl;
         return;
     }
-
-    printGroup(thisPerson_name, groupName, namelist, output, depth - 1);
-
+    //collect the data of all the members with certain depth
+    collectRelationsWithDepth(thisPersonName, namelist,
+                              PARENT_DIRECTION, depth);
+    //print the data
+    printGroup(thisPersonName, groupName, namelist, output, depth - 1);
 }
 
 //======== below are private functions ========
@@ -332,7 +339,7 @@ void Familytree::printGroup(const std::string &id, const std::string &group,
     if(container.empty()){
         output << id << " has no ";
         if(depth - 1){
-            for(int i = depth - 1; i > 0; i--){
+            for(int i = depth; i > 0; i--){
                 output << "great-";
             }
         }
@@ -341,7 +348,7 @@ void Familytree::printGroup(const std::string &id, const std::string &group,
     }
     output << id << " has " << container.size() << " " ;
     if(depth - 1){
-        for(int i = depth - 1; i > 0; i--){
+        for(int i = depth; i > 0; i--){
             output << "great-";
         }
     }
