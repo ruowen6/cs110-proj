@@ -124,7 +124,8 @@ void Familytree::printSiblings(Params params, std::ostream& output) const
     IdSet namelistParent = {};
 
     //find the parents
-    collectRelationsWithDepth(thisPersonName, namelistParent, "PARENT_DIRECTION");
+    collectRelationsWithDepth(thisPersonName, namelistParent,
+                              "PARENT_DIRECTION");
 
 
     //find the children of this person's parents
@@ -417,7 +418,7 @@ void Familytree::collectRelationsWithDepth(const std::string& id,
     if(!eachPerson){
         return;
     }
-
+    //decide the target relation direction of current person
     std::vector<Person*> membersToSearch;
     if(direction == "PARENT_DIRECTION"){
         membersToSearch = eachPerson->parents_;
@@ -425,13 +426,16 @@ void Familytree::collectRelationsWithDepth(const std::string& id,
     else{
         membersToSearch = eachPerson->children_;
     }
-
+    //in the target group of current person
     for(auto& member:membersToSearch){
         if(member){
+            /* add the name of the target ralation only when
+             * the recursion reaches the target depth */
             if(currentDepth == maxDepth){
                 membersList.insert(member->id_);
             }
             else{
+                //recurssively find the children of each child and so on...
                 collectRelationsWithDepth(member->id_, membersList,
                                           direction,
                                           maxDepth, currentDepth + 1);
@@ -440,65 +444,73 @@ void Familytree::collectRelationsWithDepth(const std::string& id,
     }
 }
 
-void Familytree::printHeightResult(const std::string& thisPerson_name,
+
+void Familytree::collectHeightResult(const std::string& thisPersonName,
+                                     std::string& resultName,
+                                     int& resultHeight,
+                                     bool isForShortest) const
+{
+    //container to put the output name list
+    IdSet namelist;
+    collectDescendants(thisPersonName, namelist);
+    //initialize the result by the person's height
+    resultHeight = getPointer(thisPersonName)->height_;
+    //find the target height
+    for(auto& eachDescendant:namelist){
+        int eachDescendantHeight = getPointer(eachDescendant)->height_;
+        //set the conparison rule: whether it is finding the shortest person
+        if(isForShortest){
+            if(resultHeight > eachDescendantHeight){
+                resultHeight = eachDescendantHeight;
+            }
+        }
+        //finding the tallest
+        else{
+            if(resultHeight < eachDescendantHeight){
+                resultHeight = eachDescendantHeight;
+            }
+        }
+    }
+    //find the target person
+    resultName = thisPersonName;
+    for(auto& eachDescendant:namelist){
+        int eachDescendantHeight = getPointer(eachDescendant)->height_;
+        //when this person's height = the target height, store the name
+        if(eachDescendantHeight == resultHeight){
+            resultName = eachDescendant;
+        }
+    }
+}
+
+void Familytree::printHeightResult(const std::string& thisPersonName,
                                    const std::string& resultName,
                                    int resultHeight, bool isForShortest,
                                    std::ostream& output) const
 {
+    //prevent the error height
     if(resultHeight == NO_HEIGHT){
-        output << "ERROR in height, check function: collectHeightResult";
+        output << "ERROR in height, please check." << std::endl;
         return;
     }
-
+    //set the keyword for output message
     std::string forFunction = "tallest";
     if(isForShortest){
         forFunction = "shortest";
     }
-    if(resultName == thisPerson_name){
+    //if the target person is the person her/himself
+    if(resultName == thisPersonName){
         output << "With the height of " << resultHeight << ", "
-                << thisPerson_name
+                << thisPersonName
                 << " is the " << forFunction
                 << " person in his/her lineage." << std::endl;
     }
+    //if the target person is someone else
     else{
         output << "With the height of " << resultHeight << ", "
                 << resultName
                 << " is the " << forFunction
                 << " person in "
-                << thisPerson_name << "'s lineage." << std::endl;
-    }
-}
-
-void Familytree::collectHeightResult(const std::string& thisPerson_name,
-                                     std::string& resultName,
-                                     int& resultHeight,
-                                     bool isForShortest) const
-{
-    IdSet namelist;
-    collectDescendants(thisPerson_name, namelist);
-    //initialize the result by the person's height
-    resultHeight = getPointer(thisPerson_name)->height_;
-    //find the target height
-    for(auto& eachDescendant:namelist){
-        int eachDescendant_height = getPointer(eachDescendant)->height_;
-        if(isForShortest){
-            if(resultHeight > eachDescendant_height){
-                resultHeight = eachDescendant_height;
-            }
-        }
-        else{
-            if(resultHeight < eachDescendant_height){
-                resultHeight = eachDescendant_height;
-            }
-        }
-    }
-    //find the target person
-    resultName = thisPerson_name;
-    for(auto& eachDescendant:namelist){
-        int eachDescendant_height = getPointer(eachDescendant)->height_;
-        if(eachDescendant_height == resultHeight){
-            resultName = eachDescendant;
-        }
+                << thisPersonName << "'s lineage." << std::endl;
     }
 }
 

@@ -181,6 +181,8 @@ private:
      * @param group can be e.g. "children", "parents", "siblings", "cousins"
      * @param container contains the ids of the group members
      * @param output
+     * @param depth is used for print the message for great-...-grand-
+     *        children/parents
      * Print the data in the container.
      */
     void printGroup(const std::string& id, const std::string& group,
@@ -213,8 +215,9 @@ private:
      * @param memberList collects the ids of all the descendants/ancestors
      *        of the given person at the given depth,
      *        according to the direction.
-     *        e.g. UP_DIRENCTION is for ancestors,
-     *             DOWN_DIRENCTION is for descendants
+     * @param direction shows the searching direction
+     *        e.g. PARENT_DIRENCTION is for ancestors,
+     *             CHILD_DIRENCTION is for descendants
      * @param maxDepth e.g. children = 0, grandchildren = 1
      * @param currentDepth is the current depth inside the recursion
      * Collects all the ids of target members at a certain level
@@ -224,6 +227,19 @@ private:
                                    IdSet& memberList, std::string direction,
                                    int maxDepth = 0,
                                    int currentDepth = 0) const;
+
+    /**
+     * @brief collectHeightResult
+     * @param thisPersonName
+     * @param resultName is the id of the tallest/shortest person
+     * @param resultHeight is the height of the tallest/shortest person
+     * @param isForShortest is whether it is for
+     *        the printShortestInLineage funtion
+     * Collect the data about tallest/shortest person's id and height
+     */
+    void collectHeightResult(const std::string& thisPersonName,
+                             std::string& resultName,
+                             int& resultHeight, bool isForShortest) const;
 
     /**
      * @brief printHeightResult
@@ -239,18 +255,6 @@ private:
                            const std::string& resultName, int resultHeight,
                            bool isForShortest, std::ostream& output) const;
 
-    /**
-     * @brief collectHeightResult
-     * @param thisPersonName
-     * @param resultName is the id of the tallest/shortest person
-     * @param resultHeight is the height of the tallest/shortest person
-     * @param isForShortest is whether it is for
-     *        the printShortestInLineage funtion
-     * Collect the data about tallest/shortest person's id and height
-     */
-    void collectHeightResult(const std::string& thisPersonName,
-                             std::string& resultName,
-                             int& resultHeight, bool isForShortest) const;
 
     //for personal test ONLY
     /**
