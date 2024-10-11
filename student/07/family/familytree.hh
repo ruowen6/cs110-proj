@@ -41,7 +41,6 @@ struct Person
 };
 
 using IdSet = std::set<std::string>;
-using PeopleMap = std::map<std::string, std::shared_ptr<Person>>;
 
 /**
  * @brief The Familytree class
@@ -189,18 +188,21 @@ private:
                     const int depth = 0) const;
 
     //below are member data/functions i set
-    void collectDescendants(const std::string& id, IdSet& descendantsList) const;
+    void collectDescendants(const std::string& id,
+                            IdSet& descendantsList) const;
 
     void collectDescendantsWithDepth(const std::string& id,
-                                       IdSet& descendantsList,
-                                       int maxDepth = 1, int currentDepth = 1) const;
+                                     IdSet& descendantsList,
+                                     int maxDepth = 1,
+                                     int currentDepth = 1) const;
 
     void collectAncestorsWithDepth(const std::string& id,
-                                       IdSet& ancestorsList,
-                                       int maxDepth = 1, int currentDepth = 1) const;
+                                   IdSet& ancestorsList,
+                                   int maxDepth = 1,
+                                   int currentDepth = 1) const;
 
-    bool isPersonNotFound (std::string& thisPerson_name, Person*& thisPerson,
-                            Params params, std::ostream& output) const;
+    bool isPersonNotFound (const std::string& thisPerson_name,
+                           Person*& thisPerson, std::ostream& output) const;
 
     void printHeightResult(const std::string& thisPerson_name,
                            const std::string& resultName, int resultHeight,
@@ -210,7 +212,7 @@ private:
                              std::string& resultName,
                              int& resultHeight, bool isForShortest) const;
 
-    PeopleMap peopleMap_;
+    std::map<std::string, std::shared_ptr<Person>> peopleMap_;
 
     //only for test
     void testTEST(std::ostream& output, std::string type);

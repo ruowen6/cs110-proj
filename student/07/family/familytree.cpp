@@ -59,9 +59,9 @@ void Familytree::printPersons(Params, std::ostream &output) const
 void Familytree::printChildren(Params params, std::ostream &output) const
 {
     std::string groupName = "children";
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -75,9 +75,9 @@ void Familytree::printChildren(Params params, std::ostream &output) const
 void Familytree::printParents(Params params, std::ostream &output) const
 {
     std::string groupName = "parents";
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -91,9 +91,9 @@ void Familytree::printParents(Params params, std::ostream &output) const
 void Familytree::printSiblings(Params params, std::ostream &output) const
 {
     std::string groupName = "siblings";
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -117,9 +117,9 @@ void Familytree::printSiblings(Params params, std::ostream &output) const
 void Familytree::printCousins(Params params, std::ostream &output) const
 {
     std::string groupName = "cousins";
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -156,9 +156,9 @@ void Familytree::printCousins(Params params, std::ostream &output) const
 void Familytree::printTallestInLineage(Params params,
                                        std::ostream &output) const
 {
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -170,15 +170,15 @@ void Familytree::printTallestInLineage(Params params,
                         isForShortest);
 
     printHeightResult(thisPerson_name, resultName, resultHeight,
-                isForShortest, output);
+                      isForShortest, output);
 }
 
 void Familytree::printShortestInLineage(Params params,
                                         std::ostream &output) const
 {
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -190,15 +190,15 @@ void Familytree::printShortestInLineage(Params params,
                         isForShortest);
 
     printHeightResult(thisPerson_name, resultName, resultHeight,
-                isForShortest, output);
+                      isForShortest, output);
 }
 
 void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 {
     std::string groupName = "grandchildren";
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -219,9 +219,9 @@ void Familytree::printGrandChildrenN(Params params, std::ostream &output) const
 void Familytree::printGrandParentsN(Params params, std::ostream &output) const
 {
     std::string groupName = "grandparents";
-    std::string thisPerson_name = "";
+    std::string thisPerson_name = params.at(0);
     Person* thisPerson = nullptr;
-    if(isPersonNotFound(thisPerson_name, thisPerson, params, output)){
+    if(isPersonNotFound(thisPerson_name, thisPerson, output)){
         return;
     }
 
@@ -247,7 +247,8 @@ Person *Familytree::getPointer(const std::string &id) const
     return peopleMap_.at(id).get();
 }
 
-void Familytree::printNotFound(const std::string &id, std::ostream &output) const
+void Familytree::printNotFound(const std::string &id,
+                               std::ostream &output) const
 {
     output << "Error. " << id << " not found." << std::endl;
 }
@@ -326,8 +327,8 @@ void Familytree::collectDescendantsWithDepth(const std::string &id,
             }
             else{
                 collectDescendantsWithDepth(child->id_,
-                                              descendantsList,
-                                              maxDepth, currentDepth + 1);
+                                            descendantsList,
+                                            maxDepth, currentDepth + 1);
             }
         }
     }
@@ -355,17 +356,16 @@ void Familytree::collectAncestorsWithDepth(const std::string &id,
             }
             else{
                 collectAncestorsWithDepth(parent->id_, ancestorsList,
-                                            maxDepth, currentDepth + 1);
+                                          maxDepth, currentDepth + 1);
             }
         }
     }
 }
 
-bool Familytree::isPersonNotFound(std::string& thisPerson_name,
+bool Familytree::isPersonNotFound(const std::string& thisPerson_name,
                                   Person *&thisPerson,
-                                  Params params, std::ostream& output) const
+                                  std::ostream& output) const
 {
-    thisPerson_name = params.at(0);
     thisPerson = getPointer(thisPerson_name);
     if(!thisPerson){
         printNotFound(thisPerson_name, output);
