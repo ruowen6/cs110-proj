@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 #include <iostream>
 #include <memory>
-#include <map>
 
 using Params = const std::vector<std::string>&;
 
@@ -216,8 +216,8 @@ private:
      *        of the given person at the given depth,
      *        according to the direction.
      * @param direction shows the searching direction
-     *        e.g. PARENT_DIRENCTION is for ancestors,
-     *             CHILD_DIRENCTION is for descendants
+     *        e.g. "parent" is for ancestors,
+     *             "child" is for descendants
      * @param maxDepth e.g. children = 0, grandchildren = 1
      * @param currentDepth is the current depth inside the recursion
      * Collects all the ids of target members at a certain level
@@ -262,7 +262,7 @@ private:
      * @param output
      * @param location is where the error occurs
      */
-    void testTEST(std::ostream& output, std::string location);
+    void testTEST(std::ostream& output, std::string location) const;
 };
 
 #endif // FAMILYTREE_HH
