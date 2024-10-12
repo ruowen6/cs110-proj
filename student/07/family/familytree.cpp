@@ -268,11 +268,6 @@ void Familytree::printGrandChildrenN(Params params, std::ostream& output) const
     //collect the data of all the members with certain depth
     collectRelationsWithDepth(thisPersonName, namelist, "child", depth);
     //print the data
-    /* using depth - 1 is because:
-     * depth = 1 is for grandchildren, but it is still the
-     * similar group to other group like children
-     * so using depth - 1 = 0 when printing the result
-     * will not trigger the "great-" string */
     printGroup(thisPersonName, groupName, namelist, output, depth);
 }
 
