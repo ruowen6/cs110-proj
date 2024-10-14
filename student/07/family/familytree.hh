@@ -164,6 +164,17 @@ private:
      * to make things easier and to avoid "copy-paste-coding".
      */
 
+    //======== below is my addition private variable ========
+
+    /* the structure and the logic is basically like this:
+     * map<id, a smart ptr points to a Person type data>
+     *     ==ptr=>Person{id,
+     *                   height,
+     *                   (vector){ptr to parentA, ptr to parentB},
+     *                   (vector){ptr to children...}}*/
+    std::map<std::string, std::shared_ptr<Person>> peopleMap_;
+
+    //====== below is the private functions offered by the template =======
     /**
      * @brief getPointer
      * @param id
@@ -196,27 +207,21 @@ private:
      * @param depth is used for print the message for great-...-grand-
      *        children/parents
      * Print the data in the container.
+     * NOTE Compared to the original printGroup function offered by template,
+     * I added a parameter depth to simplify the print for "great-" prefix.
      */
     void printGroup(const std::string& id, const std::string& group,
                     const IdSet& container, std::ostream& output,
                     const int depth = 0) const;
 
-    //======== below are my addition private functions/variable ========
-
-    /* the structure and the logic is basically like this:
-     * map<id, a smart ptr points to a Person type data>
-     *     ==ptr=>Person{id,
-     *                   height,
-     *                   (vector){ptr to parentA, ptr to parentB},
-     *                   (vector){ptr to children...}}*/
-    std::map<std::string, std::shared_ptr<Person>> peopleMap_;
+    //======== below are my addition private functions ========
 
     /**
      * @brief collectDescendants
      * @param id
      * @param descendantsList collects the ids of all the descendants
      *        of the given person
-     * Collects all the ids of descendants and put into the descendantsList
+     * Collects all the ids of descendants and put into the descendantsList.
      */
     void collectDescendants(const std::string& id,
                             IdSet& descendantsList) const;
@@ -233,7 +238,7 @@ private:
      * @param maxDepth e.g. children = 0, grandchildren = 1
      * @param currentDepth is the current depth inside the recursion
      * Collects all the ids of target members at a certain level
-     * and put into the memberList
+     * and put into the memberList.
      */
     void collectRelationsWithDepth(const std::string& id,
                                    IdSet& memberList, std::string direction,
@@ -247,7 +252,7 @@ private:
      * @param resultHeight is the height of the tallest/shortest person
      * @param isForShortest is whether this call is for
      *        the printShortestInLineage funtion
-     * Collect the data about tallest/shortest person's id and height
+     * Collect the data about tallest/shortest person's id and height.
      */
     void collectHeightResult(const std::string& id,
                              std::string& resultId,
@@ -261,7 +266,7 @@ private:
      * @param isForShortest is whether it is for
      *        the printShortestInLineage funtion
      * @param output
-     * Print the message about tallest/shortest person's id and height
+     * Print the message about tallest/shortest person's id and height.
      */
     void printHeightResult(const std::string& id,
                            const std::string& resultId, int resultHeight,
