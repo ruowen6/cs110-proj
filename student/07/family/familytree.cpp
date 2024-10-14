@@ -1,7 +1,18 @@
+//Description:
+/* This file implements the functions for class Familytree.
+ * The file contains all the implementations for the member functions
+ * and the comments on the functions' logic.
+ *
+ * File author
+ * Name: Ruowen Liu
+ * Student number: 152273523
+ * UserID: fvruli
+ * E-Mail: ruowen.liu@tuni.fi
+ * */
+
 #include "familytree.hh"
 
 #include <iostream>
-#include <set>
 #include <string>
 
 Familytree::Familytree()
@@ -12,14 +23,17 @@ void Familytree::addNewPerson(const std::string& id, int height,
                               std::ostream& output)
 {
     /* if not the first time add
-     * the getPointer function will return a valid pointer */
+     * the getPointer function will return a pointer
+     * which is not nullptr*/
     if(getPointer(id)){
         output << ALREADY_ADDED << std::endl;
         return;
     }
+    //if not added, make the ptr points to the Person type data
     std::shared_ptr<Person> thisPerson
             = std::make_shared<Person>(
                 Person{id, height, {nullptr, nullptr}, {}});
+
     peopleMap_.insert({{id, thisPerson}});
     //testTEST(output, "addNewPerson");
 }
@@ -55,7 +69,7 @@ void Familytree::addRelation(const std::string& child,
 void Familytree::printPersons(Params, std::ostream& output) const
 {
     for(auto& person:peopleMap_){
-        //print:        id,            height in the Person struct
+        //print:       (id),           (height in the Person struct)
         output << person.first << ", " << person.second->height_ << std::endl;
     }
 }
@@ -74,7 +88,7 @@ void Familytree::printChildren(Params params, std::ostream& output) const
         printNotFound(thisPersonName, output);
         return;
     }
-    //container to put the output name list
+    //else, creat the container to put the output name list
     IdSet namelist = {};
     //collect the children data
     collectRelationsWithDepth(thisPersonName, namelist, "child");
@@ -96,7 +110,7 @@ void Familytree::printParents(Params params, std::ostream& output) const
         printNotFound(thisPersonName, output);
         return;
     }
-    //container to put the output name list
+    //else, creat the container to put the output name list
     IdSet namelist = {};
     //collect the parent data
     collectRelationsWithDepth(thisPersonName, namelist, "parent");
@@ -118,7 +132,7 @@ void Familytree::printSiblings(Params params, std::ostream& output) const
         printNotFound(thisPersonName, output);
         return;
     }
-    //container to put the output name list
+    //else, creat the container to put the output name list
     IdSet namelist = {};
     //helper container, to put the parents name list
     IdSet namelistParent = {};
@@ -154,7 +168,7 @@ void Familytree::printCousins(Params params, std::ostream& output) const
         printNotFound(thisPersonName, output);
         return;
     }
-    //container to put the output name list
+    //else, creat the container to put the output name list
     IdSet namelist = {};
     //helper container, to put the name list of parents
     IdSet namelistParents = {};
@@ -256,7 +270,7 @@ void Familytree::printGrandChildrenN(Params params, std::ostream& output) const
         printNotFound(thisPersonName, output);
         return;
     }
-    //container to put the output name list
+    //else, creat the container to put the output name list
     IdSet namelist = {};
     //get the searching depth from the user's input
     int depth = stoi(params.at(1));
@@ -285,7 +299,7 @@ void Familytree::printGrandParentsN(Params params, std::ostream& output) const
         printNotFound(thisPersonName, output);
         return;
     }
-    //container to put the output name list
+    //else, creat the container to put the output name list
     IdSet namelist = {};
     //get the searching depth from the user's input
     int depth = stoi(params.at(1));
@@ -297,11 +311,6 @@ void Familytree::printGrandParentsN(Params params, std::ostream& output) const
     //collect the data of all the members with certain depth
     collectRelationsWithDepth(thisPersonName, namelist, "parent", depth);
     //print the data
-    /* using depth - 1 is because:
-     * depth = 1 is for grandchildren, but it is still the
-     * similar group to other group like children
-     * so using depth - 1 = 0 when printing the result
-     * will not trigger the "great-" string */
     printGroup(thisPersonName, groupName, namelist, output, depth);
 }
 
@@ -326,9 +335,9 @@ void Familytree::printNotFound(const std::string& id,
 IdSet Familytree::vectorToIdSet(const std::vector<Person*>& container) const
 {
     IdSet idList = {};
-    /* with the given container contains members' pointers,
+    /* With the given container contains members' pointers,
      * if the pointer is valid (not nullptr),
-     * then the id(string) of this person can be added to the idSet*/
+     * then the id(string) of this person can be added to the idSet */
     for(auto person:container){
         if(person){
             idList.insert(person->id_);
@@ -347,7 +356,7 @@ void Familytree::printGroup(const std::string& id, const std::string& group,
         /* when depth = 1, it is searching grandchildren/grandparents,
          * still no need to use any "great-" string.
          * So this branch should start from depth = 2
-         * and print one "great-" */
+         * and print one "great-". Thus using i < depth - 1 here. */
         for(int i = 0; i < depth - 1; i++){
             output << "great-";
         }
@@ -360,7 +369,7 @@ void Familytree::printGroup(const std::string& id, const std::string& group,
     /* when depth = 1, it is searching grandchildren/grandparents,
      * still no need to use any "great-" string.
      * So this branch should start from depth = 2
-     * and print one "great-" */
+     * and print one "great-". Thus using i < depth - 1 here. */
     for(int i = 0; i < depth - 1; i++){
         output << "great-";
     }
@@ -422,12 +431,13 @@ void Familytree::collectRelationsWithDepth(const std::string& id,
     for(auto& member:membersToSearch){
         if(member){
             /* add the name of the target ralation only when
-             * the recursion reaches the target depth */
+             * the recursion reaches the exact target depth */
             if(currentDepth == maxDepth){
                 membersList.insert(member->id_);
             }
             else{
-                //recurssively find the children of each child and so on...
+                /* recurssively find the children/parents of
+                 * each child/parent (depends on the direction) and so on... */
                 collectRelationsWithDepth(member->id_, membersList,
                                           direction,
                                           maxDepth, currentDepth + 1);
@@ -437,16 +447,16 @@ void Familytree::collectRelationsWithDepth(const std::string& id,
 }
 
 
-void Familytree::collectHeightResult(const std::string& thisPersonName,
-                                     std::string& resultName,
+void Familytree::collectHeightResult(const std::string& id,
+                                     std::string& resultId,
                                      int& resultHeight,
                                      bool isForShortest) const
 {
     //container to put the output name list
     IdSet namelist;
-    collectDescendants(thisPersonName, namelist);
+    collectDescendants(id, namelist);
     //initialize the result by the person's height
-    resultHeight = getPointer(thisPersonName)->height_;
+    resultHeight = getPointer(id)->height_;
     //find the target height
     for(auto& eachDescendant:namelist){
         int eachDescendantHeight = getPointer(eachDescendant)->height_;
@@ -456,7 +466,7 @@ void Familytree::collectHeightResult(const std::string& thisPersonName,
                 resultHeight = eachDescendantHeight;
             }
         }
-        //finding the tallest
+        //for finding the tallest
         else{
             if(resultHeight < eachDescendantHeight){
                 resultHeight = eachDescendantHeight;
@@ -464,18 +474,18 @@ void Familytree::collectHeightResult(const std::string& thisPersonName,
         }
     }
     //find the target person
-    resultName = thisPersonName;
+    resultId = id;
     for(auto& eachDescendant:namelist){
         int eachDescendantHeight = getPointer(eachDescendant)->height_;
         //when this person's height = the target height, store the name
         if(eachDescendantHeight == resultHeight){
-            resultName = eachDescendant;
+            resultId = eachDescendant;
         }
     }
 }
 
-void Familytree::printHeightResult(const std::string& thisPersonName,
-                                   const std::string& resultName,
+void Familytree::printHeightResult(const std::string& id,
+                                   const std::string& resultId,
                                    int resultHeight, bool isForShortest,
                                    std::ostream& output) const
 {
@@ -490,19 +500,19 @@ void Familytree::printHeightResult(const std::string& thisPersonName,
         forFunction = "shortest";
     }
     //if the target person is the person her/himself
-    if(resultName == thisPersonName){
+    if(resultId == id){
         output << "With the height of " << resultHeight << ", "
-                << thisPersonName
+                << id
                 << " is the " << forFunction
                 << " person in his/her lineage." << std::endl;
     }
     //if the target person is someone else
     else{
         output << "With the height of " << resultHeight << ", "
-                << resultName
+                << resultId
                 << " is the " << forFunction
                 << " person in "
-                << thisPersonName << "'s lineage." << std::endl;
+                << id << "'s lineage." << std::endl;
     }
 }
 

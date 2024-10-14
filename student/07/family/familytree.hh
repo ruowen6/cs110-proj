@@ -11,6 +11,18 @@
 #        * All changes to private side are allowed.                         #
 #############################################################################
 */
+//Description:
+/* This file defines the important class Familytree for the whole project.
+ * The file contains all the declarations for the member functions,
+ * the data structures, and brief comments about each function.
+ *
+ * File edited by
+ * Name: Ruowen Liu
+ * Student number: 152273523
+ * UserID: fvruli
+ * E-Mail: ruowen.liu@tuni.fi
+ * */
+
 #ifndef FAMILYTREE_HH
 #define FAMILYTREE_HH
 
@@ -79,7 +91,7 @@ public:
      * @param output
      * Print all stored persons with their ids and heights.
      */
-    void printPersons(Params, std::ostream &output) const;
+    void printPersons(Params, std::ostream& output) const;
 
     /**
      * @brief printChildren
@@ -230,29 +242,29 @@ private:
 
     /**
      * @brief collectHeightResult
-     * @param thisPersonName
-     * @param resultName is the id of the tallest/shortest person
+     * @param id
+     * @param resultId is the id of the tallest/shortest person
      * @param resultHeight is the height of the tallest/shortest person
-     * @param isForShortest is whether it is for
+     * @param isForShortest is whether this call is for
      *        the printShortestInLineage funtion
      * Collect the data about tallest/shortest person's id and height
      */
-    void collectHeightResult(const std::string& thisPersonName,
-                             std::string& resultName,
+    void collectHeightResult(const std::string& id,
+                             std::string& resultId,
                              int& resultHeight, bool isForShortest) const;
 
     /**
      * @brief printHeightResult
-     * @param thisPersonName
-     * @param resultName is the id of the tallest/shortest person
+     * @param id
+     * @param resultId is the id of the tallest/shortest person
      * @param resultHeight is the height of the tallest/shortest person
      * @param isForShortest is whether it is for
      *        the printShortestInLineage funtion
      * @param output
      * Print the message about tallest/shortest person's id and height
      */
-    void printHeightResult(const std::string& thisPersonName,
-                           const std::string& resultName, int resultHeight,
+    void printHeightResult(const std::string& id,
+                           const std::string& resultId, int resultHeight,
                            bool isForShortest, std::ostream& output) const;
 
 
