@@ -164,7 +164,7 @@ private:
      * to make things easier and to avoid "copy-paste-coding".
      */
 
-    //======== below is my addition private variable ========
+    //======== below is the private variable I add ========
 
     /* the structure and the logic is basically like this:
      * map<id, a smart ptr points to a Person type data>
@@ -174,7 +174,7 @@ private:
      *                   (vector){ptr to children...}}*/
     std::map<std::string, std::shared_ptr<Person>> peopleMap_;
 
-    //====== below is the private functions offered by the template =======
+    //====== below are the private functions offered by the template =======
     /**
      * @brief getPointer
      * @param id
@@ -214,7 +214,7 @@ private:
                     const IdSet& container, std::ostream& output,
                     const int depth = 0) const;
 
-    //======== below are my addition private functions ========
+    //======== below are the private functions I add ========
 
     /**
      * @brief collectDescendants
