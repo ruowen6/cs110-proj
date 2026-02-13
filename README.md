@@ -4,11 +4,11 @@ This repository contains my course projects for **COMP.CS.110: Programming 2: Te
 
 ### 1) `1-shopping/` — Chain Stores (Shopping)
 A C++ console program that reads chain-store product data from an input file and provides a command-line interface to query chains, stores, product selections, and cheapest prices.  
-See details in: `1-shopping/README.md`
+See details in: `1-shopping/shopping/README.md`
 
 ### 2) `2-family/` — Family Tree
 A C++ family tree program based on a course-provided template. The program reads family members and parent relationships from a CSV file, stores them in a pointer-linked data structure, and provides a CLI to query relationships such as children, siblings, parents, cousins, and lineage-based queries (e.g., tallest in lineage).  
-See details in: `2-family/README.md`
+See details in: `2-family/family/README.md`
 
 
 ## Course Information
