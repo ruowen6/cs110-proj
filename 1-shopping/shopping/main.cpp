@@ -18,8 +18,8 @@
  *
  * Program author
  * Name: Ruowen Liu
- * Student number: 152273523
- * UserID: fvruli
+ * Student number: -
+ * UserID: -
  * E-Mail: ruowen.liu@tuni.fi
  *
  * Notes about the program and it's implementation (if any):

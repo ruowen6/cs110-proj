@@ -5,8 +5,8 @@
  *
  * File author
  * Name: Ruowen Liu
- * Student number: 152273523
- * UserID: fvruli
+ * Student number: -
+ * UserID: -
  * E-Mail: ruowen.liu@tuni.fi
  * */
 
