@@ -18,6 +18,6 @@ Programming 2: Techniques, fall 2024 (period 1)
 Study material: https://plus.tuni.fi/comp.cs.110/fall-2024/
 
 This Git repository contains three directories (folders):
-- examples: example codes given by course staff (Not applicable in this repository)
+- examples: example codes given by course staff (not included in this repository)
 - student: codes written by a student
 - templates: code templates given by course staff.
